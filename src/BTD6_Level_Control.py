@@ -180,34 +180,35 @@ def wait_level(level: int):
     :raises GameRestartException: 如果需要重试整个游戏
     """
 
-    break_flag = 0
-
-    while config.NOW_GAME_LEVEL != level and break_flag == 0:
+    while config.NOW_GAME_LEVEL != level:
 
         if config.SCRIPT_STOP == 1:
             return
+        
         # 延迟 100 毫秒，控制识别频率
         delay()
 
         # 检查当前关卡是否结束
         level_end_flag = see_if_next_level_available()
 
-        if level_end_flag == 1:  # "下一关"按钮可用，关卡结束
+        if level_end_flag == 1:  # "下一关"按钮可用，关卡成功结束
 
             config.GAME_SPEED = -abs(config.GAME_SPEED)  # 游戏速度由之前的速度转变为暂停，用负数代表
+            print(f"关卡结束，速度变为{config.GAME_SPEED}")
+
+
+            if level not in config.LEVELS_WITH_STOPS:  # 如果下一关没有“关前停顿”指令，则可以三倍速进入下一关
+                change_game_speed(3)  
+                print(f"三倍速进入下一关，当前STOP_HERE = {config.STOP_HERE}")
+
             config.NOW_GAME_LEVEL += 1  # 正常游戏，关卡计数器 +1
             config.RETRY_TIMES = 0  # 成功进入下一关，重置重试次数
-
-            if config.STOP_HERE == 0:
-                change_game_speed(3)  # 三倍速进入下一关
-            else:
-                config.STOP_HERE = 0  # 将在本局开头停止的标识重置
-
+            
             # 记录日志
             if config.LOG_FILE_GRANULARITY >= 2:
                 write_game_log(f"关卡 {config.NOW_GAME_LEVEL}", config.CUSTOM_SAVE_PATH)
 
-        # 检查当前关卡是否失败
+        # 如果找不到下一关按钮，则检查当前关卡是否失败
         check_fail_result = find_color_ex(400, 500, 405, 505, "3C6091", 0, 0.95)
         if check_fail_result:  # 找到了失败框的蓝色
             # 二次判断，识别猴子名称框中的棕色
@@ -216,6 +217,7 @@ def wait_level(level: int):
 
                 config.FAIL_COUNT += 1  # 增加全局失败统计
                 config.GAME_SPEED = -1  # 此时游戏是暂停的，且会变为一倍速
+                print(f"关卡失败，速度变为{config.GAME_SPEED}")
                 delay()
 
                 # 进行重试
@@ -235,7 +237,8 @@ def wait_level(level: int):
                     delay()
                     left_click()
                     delay(500)
-                    change_game_speed(3)  # 三倍速进入下一关
+                    if config.NOW_GAME_LEVEL not in config.LEVELS_WITH_STOPS:  # 如果本关没有“关前停顿”指令，则可以三倍速进入
+                        change_game_speed(3)  # 三倍速进入重试这关
 
                     if config.LOG_FILE_GRANULARITY >= 1:
                         write_game_log(f"第 {config.RETRY_TIMES} 次自动重试本关，全局失败次数{config.FAIL_COUNT}",

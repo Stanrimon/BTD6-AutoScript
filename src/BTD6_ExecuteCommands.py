@@ -296,7 +296,7 @@ def execute_command(row):
 
     elif command == "关前停顿":
         print(f"执行指令：关前停顿 (关卡: {config.NOW_GAME_LEVEL})")
-        config.STOP_HERE = 1
+        config.STOP_HERE += 1
 
     elif command == "地图互动":
         print(f"执行指令：地图元素互动 (关卡: {config.NOW_GAME_LEVEL})")
@@ -480,8 +480,18 @@ def execute_commands(file_path):
                 # 将关前停顿插入到当前关卡指令的最前面
                 level_commands[level] = pause_commands + other_commands
 
+
+            # 生成关前停顿关卡列表
+            levels_with_stops = []
+            for level, cmds in level_commands.items():
+                if any(cmd.get("指令") == "关前停顿" for cmd in cmds):
+                    levels_with_stops.append(level)
+            levels_with_stops.sort()  # 确保顺序正确
+            config.LEVELS_WITH_STOPS = levels_with_stops
+
             last_command_list = {}
             # print(level_commands)
+            print(config.LEVELS_WITH_STOPS)
 
             for level, command_list in list(level_commands.items()):
                 while config.SCRIPT_STOP == 0:

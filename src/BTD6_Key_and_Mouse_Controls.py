@@ -1,10 +1,54 @@
 import time
 import pyautogui
+import threading
 from config import config, keybind_config
-from pynput.keyboard import Controller, Key, KeyCode
+from pynput.keyboard import Controller, Key, Listener
 
 pyautogui.PAUSE = 0  # 移除全局延迟
 keyboard = Controller()
+
+# 实现按方向键时微调鼠标位置功能
+class ControlMouseUponKeyPress:
+    def __init__(self):
+        self.listener = None
+        self.enabled = False
+        self.lock = threading.Lock()
+    def start_listen(self):
+        """启动方向键监听"""
+        with self.lock:
+            if not self.listener or not self.listener.running:
+                self.listener = Listener(on_press=self._handle_keys)
+                self.listener.start()
+    def stop_listen(self):
+        """停止方向键监听"""
+        with self.lock:
+            if self.listener and self.listener.running:
+                self.listener.stop()
+                self.listener = None
+    def enable_control(self, enable):
+        """设置控制开关状态"""
+        with self.lock:
+            self.enabled = enable
+    def _handle_keys(self, key):
+        """处理方向键事件（系统级监听）"""
+        with self.lock:
+            if not self.enabled:
+                return
+        dx, dy = 0, 0
+        try:
+            if key == Key.left:
+                dx = -1
+            elif key == Key.right:
+                dx = 1
+            elif key == Key.up:
+                dy = -1
+            elif key == Key.down:
+                dy = 1
+            else:
+                return
+        except AttributeError:
+            return
+        pyautogui.move(dx, dy)
 
 
 def delay(time_ms=config.DELAY_TIME):

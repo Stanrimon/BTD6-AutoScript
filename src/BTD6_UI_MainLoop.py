@@ -16,7 +16,7 @@ from PIL import ImageGrab
 from BTD6_ExecuteCommands import play_game, play_game_test_placement
 from BTDWindow import find_and_focus_window
 from BTD6_Level_Control import return_to_menu
-from BTD6_Key_and_Mouse_Controls import key_press
+from BTD6_Key_and_Mouse_Controls import key_press, ControlMouseUponKeyPress
 from config import config, global_text, keybind_config, DEFAULT_KEY_MAPPING, KEY_OPTIONS
 
 # ==== 全局变量初始化 ====
@@ -299,7 +299,7 @@ def create_main_page(root):
 
     # ==== 主页面内容 ====
     # ==== 标题 ====
-    title_label = tk.Label(main_page, text="气球塔防6脚本控制面板-20250407更新V48", font=("Microsoft Yahei", 16, "bold"))
+    title_label = tk.Label(main_page, text="气球塔防6脚本控制面板-20250414更新V48", font=("Microsoft Yahei", 16, "bold"))
     title_label.pack(pady=10)
 
     # ==== 循环次数滑动条 ====
@@ -438,7 +438,6 @@ def create_main_page(root):
 def create_config_page(notebook_to_append, config_identity):
     """
     创建全局变量配置页面，并添加到指定的 Notebook 中。
-。
     :param notebook_to_append: ttk.Notebook，页面的父容器
     :param config_identity: GlobalConfig，包含全局变量默认值的配置实例
     """
@@ -684,51 +683,9 @@ def create_coordinate_page(notebook_to_append):
     hook_id = None  # 新增hook_id用于存储键盘监听句柄
     records = []
 
-    # ==== 新增方向键控制功能 ====
-    def handle_arrow_keys(event):
-        """处理方向键事件"""
-        # print(f"[DEBUG] 捕获到方向键事件: {event.keysym}")
-
-        if arrow_control_var.get():
-            # print(f"[DEBUG] 方向键控制已启用，处理{event.keysym}")
-            dx, dy = 0, 0
-            if event.keysym == 'Left':
-                dx = -1
-                # print("arrow_control_var.get LEFT")
-            elif event.keysym == 'Right':
-                dx = 1
-                # print("arrow_control_var.get RIGHT")
-            elif event.keysym == 'Up':
-                dy = -1
-                # print("arrow_control_var.get UP")
-            elif event.keysym == 'Down':
-                dy = 1
-                # print("arrow_control_var.get DOWN")
-
-            if dx != 0 or dy != 0:
-                old_x, old_y = pyautogui.position()
-                pyautogui.move(dx, dy)
-                new_x, new_y = pyautogui.position()
-                # print(f"[DEBUG] 移动鼠标: 旧坐标({old_x}, {old_y}) -> 新坐标({new_x}, {new_y})")
-        else:
-            print("[DEBUG] 方向键控制未启用")
-
-    def setup_arrow_bindings(page):
-        """绑定/解绑方向键事件"""
-        if arrow_control_var.get():
-            # print("[DEBUG] 绑定方向键事件到页面")
-            page.bind('<Left>', handle_arrow_keys)
-            page.bind('<Right>', handle_arrow_keys)
-            page.bind('<Up>', handle_arrow_keys)
-            page.bind('<Down>', handle_arrow_keys)
-            page.focus_set()  # 确保页面获得焦点
-            # print("[DEBUG] 页面焦点状态:", page.focus_get())
-        else:
-            # print("[DEBUG] 解绑方向键事件")
-            page.unbind('<Left>')
-            page.unbind('<Right>')
-            page.unbind('<Up>')
-            page.unbind('<Down>')
+    # 初始化鼠标控制器
+    control_mouse_upon_key_press = ControlMouseUponKeyPress()
+    control_mouse_upon_key_press.start_listen()  # 启动监听线程
 
     # ==== 控制按钮 ====
     toggle_frame = tk.Frame(coord_page)
@@ -738,14 +695,14 @@ def create_coordinate_page(notebook_to_append):
                               command=lambda: toggle_mouse_info(coord_page), bg="green", fg="white")
     toggle_button.pack(side="left", padx=5)
 
-    # 添加方向键控制勾选框
+    # 方向键控制勾选框
     arrow_control_var = tk.BooleanVar()
     arrow_checkbox = tk.Checkbutton(
         toggle_frame,
         text="方向键移动鼠标",
         variable=arrow_control_var,
         font=("Microsoft Yahei", 12),
-        command=lambda: setup_arrow_bindings(coord_page)
+        command=lambda: control_mouse_upon_key_press.enable_control(arrow_control_var.get())
     )
     arrow_checkbox.pack(side="left", padx=5)
 
