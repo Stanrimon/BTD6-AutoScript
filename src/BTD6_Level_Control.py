@@ -405,72 +405,213 @@ def return_to_menu():
     print("Returned to menu")
 
 
-'''
-# 定义保存目录
-save_directory = "D:/desktop"  # 确保路径存在，否则需要创建
-if not os.path.exists(save_directory):
-    os.makedirs(save_directory)
+def get_insta_map_name() -> str:
+    """
+    进入关卡选择页面，获取当前奖励地图的名称之后回到主页面。
 
-# 初始化 EasyOCR 识别器
-reader = easyocr.Reader(['en'], gpu=True)  # 禁用 GPU，可根据需要启用 GPU：gpu=True
+    :return: 地图名称的字符串，如果未找到匹配的地图则返回 "Unknown"
+    """
+    move2(640, 660)  # 开始
+    delay()
+    left_click(1)
+    delay()
+    move2(53, 138)  # 搜索
+    delay()
+    left_click(1)
+    delay()
+    move2(910, 55)  # insta
+    delay()
+    left_click(1)
+    delay(500)
 
-# 定义屏幕区域（左上角 (100, 100) 到 (180, 150)）
-if config.MAX_GAME_LEVEL >= 100:
-    monitor = {"top": 51, "left": 920, "width": 1039 - 920, "height": 77 - 45}  # 矩形
-elif config.MAX_GAME_LEVEL < 100:
-    monitor = {"top": 51, "left": 930, "width": 46, "height": 40}  # 矩形
+    # 初始化地图名称为 "Unknown"
+    map_name = "Unknown"
+
+    # 检查 GlacialTrail
+    glacial_trail_check_result = find_color_ex(285, 497, 290, 502, "10AAC6", 0, 0.97)
+    if glacial_trail_check_result:
+        map_name = "冰河之径"
+
+    # 检查 DarkDungeons
+    dark_dungeons_check_result = find_color_ex(281, 491, 286, 496, "5A5D52", 0, 0.97)
+    if dark_dungeons_check_result:
+        dark_dungeons_second_check_result = find_color_ex(345, 396, 365, 416, "50C5C4", 0, 0.97)
+        if dark_dungeons_second_check_result:
+            map_name = "黑暗地下城"
+            print(f"insta关卡识别结果: {map_name}")
+
+    # 检查 Sanctuary
+    sanctuary_check_result = find_color_ex(283, 451, 288, 456, "7B7529", 0, 0.97)
+    if sanctuary_check_result:
+        map_name = "避难所"
+        print(f"insta关卡识别结果: {map_name}")
+
+    # 检查 Ravine
+    ravine_check_result = find_color_ex(285, 482, 290, 487, "797C2D", 0, 0.97)
+    if ravine_check_result:
+        map_name = "峡谷"
+        print(f"insta关卡识别结果: {map_name}")
+
+    # 检查 FloodedValley
+    flooded_valley_check_result = find_color_ex(397, 490, 402, 495, "39A6CE", 0, 0.97)
+    if flooded_valley_check_result:
+        map_name = "水淹山谷"
+        print(f"insta关卡识别结果: {map_name}")
+
+    # 检查 Infernal
+    infernal_check_result = find_color_ex(276, 458, 281, 463, "C61426", 0, 0.97)
+    if infernal_check_result:
+        map_name = "炼狱"
+        print(f"insta关卡识别结果: {map_name}")
+
+    # 检查 BloodyPuddles
+    bloody_puddles_check_result = find_color_ex(282, 475, 287, 480, "4A2F3F", 0, 0.97)
+    if bloody_puddles_check_result:
+        map_name = "血腥水坑"
+        print(f"insta关卡识别结果: {map_name}")
+
+    # 检查 Workshop
+    workshop_check_result = find_color_ex(261, 484, 266, 489, "2E5A47", 0, 0.97)
+    if workshop_check_result:
+        map_name = "工坊"
+        print(f"insta关卡识别结果: {map_name}")
+
+    # 检查 Quad
+    quad_check_result = find_color_ex(279, 466, 284, 471, "E6DEBF", 0, 0.97)
+    if quad_check_result:
+        map_name = "方院"
+        print(f"insta关卡识别结果: {map_name}")
+
+    # 检查 DarkCastle
+    dark_castle_check_result = find_color_ex(306, 425, 311, 430, "868923", 0, 0.97)
+    if dark_castle_check_result:
+        map_name = "黑暗城堡"
+        print(f"insta关卡识别结果: {map_name}")
+
+    # 检查 MuddyPuddles
+    muddy_puddles_check_result = find_color_ex(318, 452, 323, 457, "945539", 0, 0.97)
+    if muddy_puddles_check_result:
+        muddy_puddles_second_check_result = find_color_ex(338, 410, 343, 415, "814831", 0, 0.97)
+        if muddy_puddles_second_check_result:
+            map_name = "泥泞的水坑"
+            print(f"insta关卡识别结果: {map_name}")
+
+    # 检查 Ouch
+    ouch_check_result = find_color_ex(270, 440, 275, 445, "756B6D", 0, 0.97)
+    if ouch_check_result:
+        map_name = "#哎哟"
+        print(f"insta关卡识别结果: {map_name}")
+
+    # 打印最终识别结果
+    print(f"最终insta关卡识别结果: {map_name}")
+
+    # 返回主页面
+    move2(55, 55)  # 返回
+    delay()
+    left_click(1)
+    delay()
+
+    return map_name
 
 
-def capture_screen_and_recognize_digits():
-    with mss.mss() as sct:
-        screenshot = sct.grab(monitor)
-        img = np.array(screenshot)
+def collect_insta():
+    print("开始执行 collect_insta 函数")
+    delay(config.COLLECT_INSTA_DELAY_TIME)
 
-        # 图像预处理
-        gray = cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY)
-        _, binary = cv2.threshold(gray, 240, 255, cv2.THRESH_BINARY)
+    while True:
+        print("查找‘收集’按钮")
+        # 将颜色值从 BGR 转换为 RGB
+        color_pos = find_color_ex(685, 494, 690, 499, "3CD500", 0, 0.9)  # BGR "00D53C" -> RGB "3CD500"
+        if color_pos:
+            intX, intY = map(int, color_pos.split('|'))
+            if intX > 0 and intY > 0:  # “收集”按钮可用
+                print("找到‘收集’按钮，点击")
+                move2(685, 494)
+                delay()
+                left_click(1)
+                delay(3000)
 
-        # 二值化图像取反
-        inverted_binary = cv2.bitwise_not(binary)
+                print("查找 insta 猴")
+                color_pos = find_color_ex(544, 378, 549, 383, "FFFFFF", 0, 0.8)  # BGR "FFFFFF" -> RGB "FFFFFF"
+                if color_pos: # 只有两个 insta 猴
+                    print("找到两个 insta 猴")
+                    delay()
+                    move2(544, 378)
+                    delay()
+                    left_click(1)
+                    delay(800)
+                    if config.LOG_FILE_GRANULARITY >= 3:  # 截图 insta 猴保存
+                        print("截图保存 insta 猴")
+                        save_screenshot(424, 204, 863, 607, config.CUSTOM_SAVE_PATH)
+                    left_click(1)
+                    delay(800)
+                    move2(744, 378)
+                    delay()
+                    left_click(1)
+                    delay(800)
+                    if config.LOG_FILE_GRANULARITY >= 3:  # 截图 insta 猴保存
+                        print("截图保存 insta 猴")
+                        save_screenshot(424, 204, 863, 607, config.CUSTOM_SAVE_PATH)
+                    left_click(1)
+                    delay(800)
+                    if config.LOG_FILE_GRANULARITY >= 1:  # 记录日志
+                        print("记录日志：收集到 Insta 猴 x 2")
+                        write_game_log("收集到Insta猴 x 2", config.CUSTOM_SAVE_PATH)
 
-        # 保存取反后的图像到指定路径
-        save_path = os.path.join(save_directory, '1.png')
-        cv2.imwrite(save_path, inverted_binary)
-        # print(f"取反后的图像已保存到: {save_path}")
+                else:  # 有三个 insta 猴
+                    print("找到三个 insta 猴")
+                    delay()
+                    move2(444, 378)
+                    delay()
+                    left_click(1)
+                    delay(800)
+                    if config.LOG_FILE_GRANULARITY >= 3:  # 截图 insta 猴保存
+                        print("截图保存 insta 猴")
+                        save_screenshot(424, 204, 863, 607, config.CUSTOM_SAVE_PATH)
+                    left_click(1)
+                    delay(800)
+                    move2(644, 378)
+                    delay()
+                    left_click(1)
+                    delay(800)
+                    if config.LOG_FILE_GRANULARITY >= 3:  # 截图 insta 猴保存
+                        print("截图保存 insta 猴")
+                        save_screenshot(424, 204, 863, 607, config.CUSTOM_SAVE_PATH)
+                    left_click(1)
+                    delay(800)
+                    move2(844, 378)
+                    delay()
+                    left_click(1)
+                    delay(800)
+                    if config.LOG_FILE_GRANULARITY >= 3:  # 截图 insta 猴保存
+                        print("截图保存 insta 猴")
+                        save_screenshot(424, 204, 863, 607, config.CUSTOM_SAVE_PATH)
+                    left_click(1)
+                    delay(800)
+                    if config.LOG_FILE_GRANULARITY >= 1:  # 记录日志
+                        print("记录日志：收集到 Insta 猴 x 3")
+                        write_game_log("收集到Insta猴 x 3", config.CUSTOM_SAVE_PATH)
 
-        # OCR 识别
-        results = reader.readtext(inverted_binary, allowlist='0123456789')  # 限制为数字
-        # results = reader.recognize(inverted_binary)  # 直接对裁剪区域进行识别
-        # print('results:', results)  # 打印完整 OCR 结果
+                print("点击‘继续’按钮")
+                move2(685, 707)  # 继续
+                delay()
+                left_click(1)
+                delay(500)
 
-        # 输出所有识别的文本（仅数字）
-        recognized_numbers = [text for (bbox, text, prob) in results]
-        print("识别到的数字:", recognized_numbers)
-
-        return recognized_numbers
-
-
-# 主循环
-print("开始循环检测屏幕中的阿拉伯数字...")
-while True:
-
-    time.sleep(0.2)
-    # 开始计时
-    start_time = time.time()
-
-    # 捕获屏幕并识别数字
-    digits = capture_screen_and_recognize_digits()
-
-    # 结束计时
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-
-    # 打印结果和耗时
-    if digits:
-        print(f"检测到数字: {digits}，耗时: {elapsed_time:.2f} 秒")
-    else:
-        print(f"未检测到数字，耗时: {elapsed_time:.2f} 秒")
-
-    # 为了不占用过多资源，可以稍作延迟
-    # time.sleep(0.5)  # 每次循环间隔 0.5 秒
-'''
+                print("判断礼物是否开完")
+                color_pos = find_color_ex(34, 75, 39, 80, "00CAF8", 0, 0.9)  # BGR "F8CA00" -> RGB "00CAF8"
+                if color_pos:
+                    intX, intY = map(int, color_pos.split('|'))
+                    if intX > 0 and intY > 0:  # 判断礼物是否开完
+                        print("礼物已开完，返回")
+                        delay()
+                        move2(50, 65)  # 礼物开完，返回
+                        delay()
+                        left_click(1)
+                        break
+                else:
+                    print("礼物未开完，继续查找‘收集’按钮")
+                    continue
+        else:
+            print("未找到‘收集’按钮，退出")
+            break

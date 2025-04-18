@@ -1,3 +1,5 @@
-from pynput.keyboard import Key
-# 打印所有支持的按键名称
-print([attr for attr in dir(Key)])
+from BTD6_Level_Control import get_insta_map_name, delay
+
+while True:
+    get_insta_map_name()
+    delay(500)

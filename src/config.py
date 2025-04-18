@@ -6,7 +6,8 @@ class GlobalConfig:
     # 定义默认值
     _default_values = {
         "DELAY_TIME": 100,
-        "LOG_FILE_GRANULARITY": 2,
+        "COLLECT_INSTA_DELAY_TIME": 3000,
+        "LOG_FILE_GRANULARITY": 3,
         "CUSTOM_SAVE_PATH": os.path.join(os.path.dirname(os.path.abspath(__file__)), "气球塔防6脚本日志"),
         "REPEAT_TIMES": 1,
         "SELECTED_FILE": 0,

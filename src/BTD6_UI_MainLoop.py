@@ -15,8 +15,9 @@ from PIL import ImageGrab
 # 本地模块
 from BTD6_ExecuteCommands import play_game, play_game_test_placement
 from BTDWindow import find_and_focus_window
-from BTD6_Level_Control import return_to_menu
+from BTD6_Level_Control import return_to_menu, get_insta_map_name, collect_insta
 from BTD6_Key_and_Mouse_Controls import key_press, ControlMouseUponKeyPress
+from BTD6_TraceLogs import write_game_log
 from config import config, global_text, keybind_config, DEFAULT_KEY_MAPPING, KEY_OPTIONS
 
 # ==== 全局变量初始化 ====
@@ -129,12 +130,34 @@ def create_main_page(root):
                 else:
                     messagebox.showwarning("未选择文件", "您没有选择任何文件。")
 
+
             elif selected_mode == "循环刷insta猴":
-                default_folder = "path/to/your/folder"
-                config.SELECTED_FOLDER = default_folder
-                print(f"模式3使用的默认文件夹路径: {default_folder}")
-                # 清空列表（模式3使用默认路径）
-                selected_files_listbox.delete(0, tk.END)
+                file_paths = filedialog.askopenfilenames(title="请选择包含12个专家图的xlsx文件", filetypes=[("xlsx files", "*.xlsx")])
+                if file_paths:
+                    # 检查文件名是否包含所有必要的地图关键词
+                    required_maps = ["冰河之径", "黑暗地下城", "避难所", "峡谷", "水淹山谷", "炼狱", "血腥水坑", "工坊", "方院", "黑暗城堡", "泥泞的水坑", "#哎哟"]
+                    missing_maps = []
+                    for map_name in required_maps:
+                        found = False
+                        for file_path in file_paths:
+                            if map_name in os.path.basename(file_path):
+                                found = True
+                                break
+                        if not found:
+                            missing_maps.append(map_name)
+                    if missing_maps:
+                        messagebox.showerror("关卡文件缺失", f"关卡文件缺失：{', '.join(missing_maps)}\n刷insta活动需要识别所有专家图阵型，文件名需要包含地图名称。\n请确保选择了所有专家图的阵型，或修改所选文件的文件名")
+                        return
+                    # 按自然顺序排序文件路径
+                    sorted_files = sorted(file_paths, key=natural_sort_key)
+                    config.SELECTED_FILES = sorted_files  # 存储排序后的列表
+                    print(f"选择的文件路径列表: {file_paths}")
+                    # 显示所有文件名
+                    for path in sorted_files:
+                        selected_files_listbox.insert(tk.END, os.path.basename(path))
+                else:
+                    messagebox.showwarning("未选择文件", "您没有选择任何文件。")
+
 
             elif selected_mode == "测试脚本摆放":
                 file_path = filedialog.askopenfilename(title="选择单一关卡的 xlsx 文件", filetypes=[("xlsx files", "*.xlsx")])
@@ -194,6 +217,10 @@ def create_main_page(root):
                 config.new_game_reset()
                 find_and_focus_window()
                 print(f"运行模式1，文件: {config.SELECTED_FILE}")
+                if config.LOG_FILE_GRANULARITY >= 1:
+                    write_game_log(f"开始游戏，运行文件 {config.SELECTED_FILE} ",
+                                    config.CUSTOM_SAVE_PATH
+                                    )
                 play_game(config.SELECTED_FILE)
                 return_to_menu()
 
@@ -230,6 +257,10 @@ def create_main_page(root):
                     f"进度({n}/{repeat_times})，当前文件: {f}"))
 
                 print(f"运行模式2，文件: {file_path}")
+                if config.LOG_FILE_GRANULARITY >= 1:
+                    write_game_log(f"开始游戏，运行文件 {file_path} ",
+                                    config.CUSTOM_SAVE_PATH
+                                    )
                 play_game(file_path)
                 return_to_menu()
                 # 更新已完成数量
@@ -240,37 +271,49 @@ def create_main_page(root):
                 file_index = (file_index + 1) % num_files
                 total_loops += 1
 
+
         elif selected_mode == "循环刷insta猴":
-
-            # 更新为模式3的显示
-            root.after(0, lambda: current_file_var.set("当前文件: insta猴默认模式"))
-
-            if not config.SELECTED_FOLDER:
-                messagebox.showerror("错误", "未设置默认文件夹路径。")
-                return
-            xlsx_files = [os.path.join(config.SELECTED_FOLDER, f) for f in os.listdir(config.SELECTED_FOLDER) if
-                          f.endswith('.xlsx')]
-            if not xlsx_files:
-                messagebox.showerror("错误", "文件夹中没有 xlsx 文件。")
+            if not hasattr(config, "SELECTED_FILES") or not config.SELECTED_FILES:
+                messagebox.showerror("错误", "未选择任何文件，请先应用设置。")
                 return
             total_loops = 0
             while total_loops < repeat_times:
-                for file_path in xlsx_files:
-                    if config.SCRIPT_STOP == 1:
-                        return
-                    if total_loops >= repeat_times:
+                if config.SCRIPT_STOP == 1:
+                    return
+                config.new_game_reset()
+                find_and_focus_window()
+                if total_loops >= repeat_times:
+                    break
+                # 获取当前地图名称
+                map_name = get_insta_map_name()
+                print(f"当前地图: {map_name}")
+                # 根据 map_name 找到对应的文件路径
+                file_path = None
+                for path in config.SELECTED_FILES:
+                    if map_name in os.path.basename(path):
+                        file_path = path
                         break
-                    # 更新已完成数量
-                    root.after(0, lambda n=total_loops: current_file_var.set(
-                        f"进度({n}/{repeat_times})，当前文件: insta猴默认模式"))
-                    config.new_game_reset()
-                    find_and_focus_window()
-                    print(f"运行模式3，文件: {file_path}")
-                    play_game(file_path)
-                    return_to_menu()
+                if not file_path:
+                    messagebox.showerror("错误", f"未找到与地图 {map_name} 对应的文件。")
+                    return
+                # 更新当前文件显示、已完成数量
+                current_file = os.path.basename(file_path)
+                root.after(0, lambda f=current_file, n=total_loops: current_file_var.set(
+                    f"进度({n}/{repeat_times})，当前文件: {f}"))
+                print(f"运行模式3，文件: {file_path}")
+                if config.LOG_FILE_GRANULARITY >= 1:
+                    write_game_log(f"开始游戏，运行文件 {file_path} ",
+                                    config.CUSTOM_SAVE_PATH
+                                    )
+                play_game(file_path)
+                return_to_menu()
+                collect_insta()
+                # 更新已完成数量
+                root.after(0, lambda c=current_file, n=total_loops: current_file_var.set(
+                    f"进度({n + 1}/{repeat_times})，当前文件: {c}"))
+                total_loops += 1
 
-                    total_loops += 1
-
+                
         elif selected_mode == "测试脚本摆放":
             # 更新当前文件显示
             current_file = os.path.basename(config.SELECTED_FILE)
@@ -288,6 +331,10 @@ def create_main_page(root):
                 config.new_game_reset()
                 find_and_focus_window()
                 print(f"运行模式4，文件: {config.SELECTED_FILE}")
+                if config.LOG_FILE_GRANULARITY >= 1:
+                    write_game_log(f"开始游戏，运行文件 {config.SELECTED_FILE} ",
+                                    config.CUSTOM_SAVE_PATH
+                                    )
                 play_game_test_placement(config.SELECTED_FILE)
 
                 # 更新已完成数量
@@ -299,7 +346,7 @@ def create_main_page(root):
 
     # ==== 主页面内容 ====
     # ==== 标题 ====
-    title_label = tk.Label(main_page, text="气球塔防6脚本控制面板-20250414更新V48", font=("Microsoft Yahei", 16, "bold"))
+    title_label = tk.Label(main_page, text="气球塔防6脚本控制面板-20250418更新V48", font=("Microsoft Yahei", 16, "bold"))
     title_label.pack(pady=10)
 
     # ==== 循环次数滑动条 ====
@@ -332,7 +379,7 @@ def create_main_page(root):
 
     run_mode_var = tk.StringVar(value="选择单一关卡的 xlsx 文件")
     mode_dropdown = ttk.Combobox(mode_frame, textvariable=run_mode_var,
-                                 values=["选择单一关卡的 xlsx 文件", "选择多个文件循环", "测试脚本摆放"])  # "循环刷insta猴"制作中
+                                 values=["选择单一关卡的 xlsx 文件", "选择多个文件循环", "循环刷insta猴", "测试脚本摆放"])  # "循环刷insta猴"制作中
     mode_dropdown.pack(side="left", padx=5, expand=True)
 
     # ==== 加载关卡文件 ====
@@ -444,6 +491,7 @@ def create_config_page(notebook_to_append, config_identity):
     # 全局变量及其中文翻译
     translations = {
         "DELAY_TIME": "操作间延迟时间（毫秒）",
+        "COLLECT_INSTA_DELAY_TIME": "insta开箱前等待时间（毫秒）",
         "LOG_FILE_GRANULARITY": "日志文件粒度",
         "CUSTOM_SAVE_PATH": "日志、截图保存路径",
         "ALLOWED_RETRY_TIMES": "重试次数（仅点击难度）",
@@ -454,6 +502,7 @@ def create_config_page(notebook_to_append, config_identity):
     # 定义允许用户修改的全局变量的列表
     allowed_keys = [
         "DELAY_TIME",
+        "COLLECT_INSTA_DELAY_TIME",
         "LOG_FILE_GRANULARITY",
         "CUSTOM_SAVE_PATH",
         "ALLOWED_RETRY_TIMES",
