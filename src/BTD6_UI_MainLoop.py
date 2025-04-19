@@ -159,7 +159,7 @@ def create_main_page(root):
                     messagebox.showwarning("未选择文件", "您没有选择任何文件。")
 
 
-            elif selected_mode == "测试脚本摆放":
+            elif selected_mode == "模拟关卡放置":
                 file_path = filedialog.askopenfilename(title="选择单一关卡的 xlsx 文件", filetypes=[("xlsx files", "*.xlsx")])
                 if file_path:
                     print(f"选择的文件路径: {file_path}")
@@ -218,11 +218,13 @@ def create_main_page(root):
                 find_and_focus_window()
                 print(f"运行模式1，文件: {config.SELECTED_FILE}")
                 if config.LOG_FILE_GRANULARITY >= 1:
-                    write_game_log(f"开始游戏，运行文件 {config.SELECTED_FILE} ",
+                    write_game_log(f"当前模式：单个文件循环，运行文件 {config.SELECTED_FILE} ",
                                     config.CUSTOM_SAVE_PATH
                                     )
+                    
                 play_game(config.SELECTED_FILE)
                 return_to_menu()
+                collect_insta()
 
                 # 更新已完成数量
                 root.after(0, lambda c=current_file, n=i: current_file_var.set(
@@ -258,11 +260,14 @@ def create_main_page(root):
 
                 print(f"运行模式2，文件: {file_path}")
                 if config.LOG_FILE_GRANULARITY >= 1:
-                    write_game_log(f"开始游戏，运行文件 {file_path} ",
+                    write_game_log(f"当前模式：多个文件循环，运行文件 {file_path} ",
                                     config.CUSTOM_SAVE_PATH
                                     )
+                    
                 play_game(file_path)
                 return_to_menu()
+                collect_insta()
+
                 # 更新已完成数量
                 root.after(0, lambda c=current_file, n=total_loops: current_file_var.set(
                     f"进度({n + 1}/{repeat_times})，当前文件: {c}"))
@@ -302,19 +307,21 @@ def create_main_page(root):
                     f"进度({n}/{repeat_times})，当前文件: {f}"))
                 print(f"运行模式3，文件: {file_path}")
                 if config.LOG_FILE_GRANULARITY >= 1:
-                    write_game_log(f"开始游戏，运行文件 {file_path} ",
+                    write_game_log(f"当前模式：循环刷insta猴，运行文件 {file_path} ",
                                     config.CUSTOM_SAVE_PATH
                                     )
+                    
                 play_game(file_path)
                 return_to_menu()
                 collect_insta()
+
                 # 更新已完成数量
                 root.after(0, lambda c=current_file, n=total_loops: current_file_var.set(
                     f"进度({n + 1}/{repeat_times})，当前文件: {c}"))
                 total_loops += 1
 
                 
-        elif selected_mode == "测试脚本摆放":
+        elif selected_mode == "模拟关卡放置":
             # 更新当前文件显示
             current_file = os.path.basename(config.SELECTED_FILE)
             root.after(0, lambda: current_file_var.set(f"当前文件: {current_file}"))
@@ -332,7 +339,7 @@ def create_main_page(root):
                 find_and_focus_window()
                 print(f"运行模式4，文件: {config.SELECTED_FILE}")
                 if config.LOG_FILE_GRANULARITY >= 1:
-                    write_game_log(f"开始游戏，运行文件 {config.SELECTED_FILE} ",
+                    write_game_log(f"当前模式：模拟关卡放置，运行文件 {config.SELECTED_FILE} ",
                                     config.CUSTOM_SAVE_PATH
                                     )
                 play_game_test_placement(config.SELECTED_FILE)
@@ -346,7 +353,7 @@ def create_main_page(root):
 
     # ==== 主页面内容 ====
     # ==== 标题 ====
-    title_label = tk.Label(main_page, text="气球塔防6脚本控制面板-20250418更新V48", font=("Microsoft Yahei", 16, "bold"))
+    title_label = tk.Label(main_page, text="气球塔防6脚本控制面板-20250419更新V48", font=("Microsoft Yahei", 16, "bold"))
     title_label.pack(pady=10)
 
     # ==== 循环次数滑动条 ====
@@ -379,7 +386,7 @@ def create_main_page(root):
 
     run_mode_var = tk.StringVar(value="选择单一关卡的 xlsx 文件")
     mode_dropdown = ttk.Combobox(mode_frame, textvariable=run_mode_var,
-                                 values=["选择单一关卡的 xlsx 文件", "选择多个文件循环", "循环刷insta猴", "测试脚本摆放"])  # "循环刷insta猴"制作中
+                                 values=["选择单一关卡的 xlsx 文件", "选择多个文件循环", "循环刷insta猴", "模拟关卡放置"])  # "循环刷insta猴"制作中
     mode_dropdown.pack(side="left", padx=5, expand=True)
 
     # ==== 加载关卡文件 ====

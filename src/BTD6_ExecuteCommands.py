@@ -128,14 +128,22 @@ def load_initial_state(file_path):
 
         if initial_param in ("简单", "仅初级"):
             config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 1, 40
-        elif initial_param in ("放气", "（占位符）"):
+        elif initial_param in ("简单快速路径", "仅初级快速路径"):
+            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 10, 40
+        elif initial_param in ("放气", "（占位符1）"):
             config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 30, 30
         elif initial_param in ("中级", "仅限军事", "天启", "相反"):
             config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 1, 60
+        elif initial_param in ("中级快速路径", "仅限军事快速路径", "天启快速路径", "相反快速路径"):
+            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 15, 60
         elif initial_param in ("困难", "只限魔法猴", "双倍生命值MOAB", "现金减半", "替代气球回合"):
             config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 3, 80
+        elif initial_param in ("困难快速路径", "只限魔法猴快速路径", "双倍生命值MOAB快速路径", "现金减半快速路径", "替代气球回合快速路径"):
+            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 22, 80
         elif initial_param in ("极难", "点击"):
             config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 6, 100
+        elif initial_param in ("极难快速路径", "（占位符2）"):
+            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 29, 100
         elif initial_param in "测试":
             config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 99, 100
         else:
