@@ -126,30 +126,44 @@ def load_initial_state(file_path):
                 initial_param = row_dict.get("首要参数")
                 break
 
-        if initial_param in ("简单", "仅初级"):
-            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 1, 40
-        elif initial_param in ("简单快速路径", "仅初级快速路径"):
-            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 10, 40
-        elif initial_param in ("放气", "（占位符1）"):
-            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 30, 30
-        elif initial_param in ("中级", "仅限军事", "天启", "相反"):
-            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 1, 60
-        elif initial_param in ("中级快速路径", "仅限军事快速路径", "天启快速路径", "相反快速路径"):
-            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 15, 60
-        elif initial_param in ("困难", "只限魔法猴", "双倍生命值MOAB", "现金减半", "替代气球回合"):
-            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 3, 80
-        elif initial_param in ("困难快速路径", "只限魔法猴快速路径", "双倍生命值MOAB快速路径", "现金减半快速路径", "替代气球回合快速路径"):
-            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 22, 80
-        elif initial_param in ("极难", "点击"):
-            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 6, 100
-        elif initial_param in ("极难快速路径", "（占位符2）"):
-            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 29, 100
-        elif initial_param in "测试":
-            config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 99, 100
-        else:
-            raise ValueError(f"请输入正确的地图难度。当前输入：{initial_param}")
+        # 检查是否是数字格式的难度设置，例如"1,80"
+        if initial_param and "," in initial_param:
+            try:
+                # 分割字符串并转换为整数
+                start_level, max_level = map(int, initial_param.split(","))
+                config.START_GAME_LEVEL = start_level
+                config.MAX_GAME_LEVEL = max_level
+                config.NOW_DIFFICULTY = "自定义"
 
-        config.NOW_DIFFICULTY = initial_param
+            except ValueError:
+                raise ValueError(f"请输入正确的地图难度或数字格式(如'1,80')。当前输入：{initial_param}")
+        else:
+                
+            if initial_param in ("简单", "仅初级"):
+                config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 1, 40
+            elif initial_param in ("简单快速路径", "仅初级快速路径"):
+                config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 10, 40
+            elif initial_param in ("放气", "（占位符1）"):
+                config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 30, 30
+            elif initial_param in ("中级", "仅限军事", "天启", "相反"):
+                config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 1, 60
+            elif initial_param in ("中级快速路径", "仅限军事快速路径", "天启快速路径", "相反快速路径"):
+                config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 15, 60
+            elif initial_param in ("困难", "只限魔法猴", "双倍生命值MOAB", "现金减半", "替代气球回合"):
+                config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 3, 80
+            elif initial_param in ("困难快速路径", "只限魔法猴快速路径", "双倍生命值MOAB快速路径", "现金减半快速路径", "替代气球回合快速路径"):
+                config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 22, 80
+            elif initial_param in ("极难", "点击"):
+                config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 6, 100
+            elif initial_param in ("极难快速路径", "（占位符2）"):
+                config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 29, 100
+            elif initial_param in "测试":
+                config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 99, 100
+            else:
+                raise ValueError(f"请输入正确的地图难度。当前输入：{initial_param}")
+
+            config.NOW_DIFFICULTY = initial_param
+
         config.NOW_GAME_LEVEL = config.START_GAME_LEVEL
 
         print(f'当前地图难度：{initial_param}，最小关卡{config.START_GAME_LEVEL}，最大关卡{config.MAX_GAME_LEVEL}')

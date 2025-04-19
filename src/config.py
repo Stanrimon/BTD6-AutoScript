@@ -7,6 +7,8 @@ class GlobalConfig:
     _default_values = {
         "DELAY_TIME": 100,
         "COLLECT_INSTA_DELAY_TIME": 3000,
+        "ENTER_NEXT_LEVEL_DELAY_TIME": 500,
+        "CHECK_NEXT_LEVEL_DELAY_TIME": 100,
         "LOG_FILE_GRANULARITY": 3,
         "CUSTOM_SAVE_PATH": os.path.join(os.path.dirname(os.path.abspath(__file__)), "气球塔防6脚本日志"),
         "REPEAT_TIMES": 1,
@@ -115,6 +117,22 @@ class KeybindConfig:
         "激活技能8": "8",
         "激活技能9": "9",
         "激活技能10": "0",
+        "激活技能11": "-",
+        "激活技能12": "=",
+        "路钉": "shift+1",
+        "MOAB地雷": "shift+2",
+        "胶水陷阱": "shift+3",
+        "迷彩陷阱": "shift+4",
+        "香蕉农夫": "shift+5",
+        "科技机器人": "shift+6",
+        "充能图腾": "shift+7",
+        "浮桥": "shift+8",
+        "便携式湖": "shift+9",
+        "超猴侠风暴": "shift+0",
+        "猴子士气提升": "shift+-",
+        "茁壮成长": "shift+=",
+        "飞镖时间": "shift+[",
+        "现金天降": "shift+]",
     }
 
     def __init__(self, ini_file_path="custom_keybind.ini"):
@@ -233,6 +251,12 @@ KEY_OPTIONS = [
 
     # 平台键
     "cmd", "cmd_r"
+
+    #组合键
+    "shift+1", "shift+2", "shift+3", "shift+4", "shift+5", 
+    "shift+6", "shift+7", "shift+8", "shift+9", "shift+0", 
+    "shift+-", "shift+=", "shift+[", "shift+]"
+
 ]
 
 
@@ -283,7 +307,23 @@ DEFAULT_KEY_MAPPING = [
     ("激活技能7", "7"),
     ("激活技能8", "8"),
     ("激活技能9", "9"),
-    ("激活技能10", "0")
+    ("激活技能10", "0"),
+    ("激活技能11", "-"),
+    ("激活技能12", "="),
+    ("路钉", "shift+1"),
+    ("MOAB地雷", "shift+2"),
+    ("胶水陷阱", "shift+3"),
+    ("迷彩陷阱", "shift+4"),
+    ("香蕉农夫", "shift+5"),
+    ("科技机器人", "shift+6"),
+    ("充能图腾", "shift+7"),
+    ("浮桥", "shift+8"),
+    ("便携式湖", "shift+9"),
+    ("超猴侠风暴", "shift+0"),
+    ("猴子士气提升", "shift+-"),
+    ("茁壮成长", "shift+="),
+    ("飞镖时间", "shift+["),
+    ("现金天降", "shift+]"),
 ]
 
 # 实例化一个全局配置对象

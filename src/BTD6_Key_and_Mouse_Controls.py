@@ -181,31 +181,75 @@ def key_press(key, times=1):
         "cmd_r": Key.cmd_r
     }
 
-    # 如果输入的 key 是操作名称（如“飞镖猴”），通过 keybind_config 获取对应的按键
-    if key not in special_keys and len(key) > 1:  # 非特殊按键且可能是操作名称
+    # 处理组合键
+    def parse_combo_key(key_str):
+        keys = key_str.split('+')
+        key_objs = []
+        for k in keys:
+            k = k.strip().lower()
+            if k in special_keys:
+                key_objs.append(special_keys[k])
+            else:
+                # 处理普通字符
+                if len(k) == 1:
+                    key_objs.append(k)
+                else:
+                    # 可能是操作名称，通过 keybind_config 获取对应的按键
+                    resolved_key = keybind_config.get_key(k)
+                    if resolved_key:
+                        if resolved_key in special_keys:
+                            key_objs.append(special_keys[resolved_key])
+                        else:
+                            key_objs.append(resolved_key)
+                    else:
+                        print(f"警告：无法识别按键或操作 '{k}'")
+                        return None
+        return key_objs
+    
+    
+    # 如果输入的 key 是操作名称（如"飞镖猴"），通过 keybind_config 获取对应的按键
+    if isinstance(key, str) and key not in special_keys and len(key) > 1 and '+' not in key:
         resolved_key = keybind_config.get_key(key)
         if resolved_key:
             key = resolved_key  # 将操作名称替换为对应的按键
         else:
             print(f"警告：无法找到操作 '{key}' 的对应按键映射。")
             return  # 未找到对应按键时直接返回
-
     for _ in range(times):
-
         if config.SCRIPT_STOP == 1:
             return
-
-            # 延迟，避免按键过快
         delay(0.65 * config.DELAY_TIME)
-        if key in special_keys:
-            # 如果是特殊按键，使用 Key 枚举
+        
+        if isinstance(key, str) and '+' in key:
+            # 处理组合键
+            key_objs = parse_combo_key(key)
+            if not key_objs:
+                return
+                
+            # 按下所有修饰键
+            for k in key_objs[:-1]:
+                keyboard.press(k)
+                delay(0.1 * config.DELAY_TIME)
+                
+            # 按下并释放主键
+            main_key = key_objs[-1]
+            keyboard.press(main_key)
+            delay(0.35 * config.DELAY_TIME)
+            keyboard.release(main_key)
+            
+            # 释放所有修饰键
+            for k in reversed(key_objs[:-1]):
+                keyboard.release(k)
+                delay(0.1 * config.DELAY_TIME)
+                
+        elif isinstance(key, str) and key in special_keys:
+            # 单个特殊按键
             keyboard.press(special_keys[key])
             delay(0.35 * config.DELAY_TIME)
             keyboard.release(special_keys[key])
         else:
-            # 如果是普通字符，直接按下并释放
+            # 单个普通字符
             keyboard.press(key)
             delay(0.35 * config.DELAY_TIME)
             keyboard.release(key)
-
 

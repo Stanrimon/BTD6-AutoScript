@@ -86,46 +86,40 @@ def idle_clicking():
     print("Performing idle clicking...")
 
 
-def see_if_next_level_available() -> int:
+def check_if_next_level_available() -> int:
     """
     判断是否可以进入下一关的逻辑。
 
     :return: 1 表示可以进入下一关，0 表示不能进入下一关。
     """
     # 初始状态，默认不可进入下一关
-    check_if_next_level_available = 0
+    next_level_available_flag = 0
 
     # 第一次查找 "下一关" 按钮
-    check_result = find_color_ex(1215, 690, 1220, 695, "FFFFFF", 0, 0.9)
-    if check_result:  # 如果找到按钮可以点击
-        # print('check 1')
-        int_x0, int_y0 = map(int, check_result.split("|"))
-        if int_x0 > 0 and int_y0 > 0:  # 二次判断防止误识别，此处识别猴子名称框中的棕色
-            check_result = find_color_ex(1240, 100, 1245, 105, "946336", 0, 0.9)
-            if check_result:
-                # print('check 2')
-                int_x1, int_y1 = map(int, check_result.split("|"))
-                if int_x1 > 0 and int_y1 > 0:
-                    # 等待 500 毫秒
-                    delay(500)
+    check_result1 = find_color_ex(1215, 690, 1220, 695, "FFFFFF", 0, 0.9)
+    if check_result1:  # 如果找到按钮可以点击
+        
+        check_result2 = find_color_ex(1240, 100, 1245, 105, "946336", 0, 0.9)
+        # 二次判断防止误识别，此处识别猴子名称框中的棕色
+        if check_result2:
 
-                    # 三次判断防止升级卡住，“下一关”按钮可点击，即此时为关末
-                    check_result = find_color_ex(1215, 690, 1220, 695, "FFFFFF", 0, 0.95)
-                    if check_result:
-                        # print('check 3')
-                        int_x2, int_y2 = map(int, check_result.split("|"))
-                        if int_x2 > 0 and int_y2 > 0:
-                            # "下一关" 按钮可点击
-                            check_if_next_level_available = 1
-                        else:
-                            # "下一关" 按钮不可点击，执行点击以防止卡住
-                            for _ in range(5):
-                                delay()  # 延迟时间，可以根据需要调整
-                                idle_clicking()
-                            delay(500)
-                            check_if_next_level_available = 1
+            # 为了防止关末升级卡住，等待一段时间。默认500 毫秒
+            # 此延时可自定义修改，为0则不判断，但可能由于升级带来失误
+            delay(config.ENTER_NEXT_LEVEL_DELAY_TIME)
 
-    return check_if_next_level_available
+            # 三次判断防止升级卡住，“下一关”按钮可点击，即此时为关末
+            check_result3 = find_color_ex(1215, 690, 1220, 695, "FFFFFF", 0, 0.95)
+            if check_result3:
+                # "下一关" 按钮可点击
+                next_level_available_flag = 1
+            else:
+                # "下一关" 按钮不可点击，执行点击以防止卡住
+                for _ in range(5):
+                    delay()  # 延迟时间，可以根据需要调整
+                    idle_clicking()
+                delay(500)
+
+    return next_level_available_flag
 
 
 class GameRestartException(Exception):
@@ -186,10 +180,10 @@ def wait_level(level: int):
             return
         
         # 延迟 100 毫秒，控制识别频率
-        delay()
+        delay(config.CHECK_NEXT_LEVEL_DELAY_TIME)
 
         # 检查当前关卡是否结束
-        level_end_flag = see_if_next_level_available()
+        level_end_flag = check_if_next_level_available()
 
         if level_end_flag == 1:  # "下一关"按钮可用，关卡成功结束
 
@@ -199,14 +193,13 @@ def wait_level(level: int):
 
             if level not in config.LEVELS_WITH_STOPS:  # 如果下一关没有“关前停顿”指令，则可以三倍速进入下一关
                 change_game_speed(3)  
-                print(f"三倍速进入下一关，当前STOP_HERE = {config.STOP_HERE}")
 
             config.NOW_GAME_LEVEL += 1  # 正常游戏，关卡计数器 +1
             config.RETRY_TIMES = 0  # 成功进入下一关，重置重试次数
             
             # 记录日志
             if config.LOG_FILE_GRANULARITY >= 2:
-                write_game_log(f"关卡 {config.NOW_GAME_LEVEL}", config.CUSTOM_SAVE_PATH)
+                write_game_log(f"进入关卡 {config.NOW_GAME_LEVEL}", config.CUSTOM_SAVE_PATH)
 
         # 如果找不到下一关按钮，则检查当前关卡是否失败
         check_fail_result = find_color_ex(400, 500, 405, 505, "3C6091", 0, 0.95)
@@ -326,6 +319,8 @@ def toggle_autostart(on_or_off):
 
             if config.LOG_FILE_GRANULARITY >= 1:  # 记录日志
                 write_game_log("自动开始已开启", config.CUSTOM_SAVE_PATH)
+
+    delay(500)
 
 
 def return_to_menu():

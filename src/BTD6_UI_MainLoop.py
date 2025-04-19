@@ -353,7 +353,7 @@ def create_main_page(root):
 
     # ==== 主页面内容 ====
     # ==== 标题 ====
-    title_label = tk.Label(main_page, text="气球塔防6脚本控制面板-20250419更新V48", font=("Microsoft Yahei", 16, "bold"))
+    title_label = tk.Label(main_page, text="气球塔防6脚本控制面板-20250420更新V48", font=("Microsoft Yahei", 16, "bold"))
     title_label.pack(pady=10)
 
     # ==== 循环次数滑动条 ====
@@ -497,8 +497,10 @@ def create_config_page(notebook_to_append, config_identity):
     """
     # 全局变量及其中文翻译
     translations = {
-        "DELAY_TIME": "操作间延迟时间（毫秒）",
-        "COLLECT_INSTA_DELAY_TIME": "insta开箱前等待时间（毫秒）",
+        "DELAY_TIME": "操作间延迟时间",
+        "ENTER_NEXT_LEVEL_DELAY_TIME": "进入下一关延迟时间",
+        "CHECK_NEXT_LEVEL_DELAY_TIME": "检查下一关延迟时间",
+        "COLLECT_INSTA_DELAY_TIME": "insta开箱前延迟时间",
         "LOG_FILE_GRANULARITY": "日志文件粒度",
         "CUSTOM_SAVE_PATH": "日志、截图保存路径",
         "ALLOWED_RETRY_TIMES": "重试次数（仅点击难度）",
@@ -509,6 +511,8 @@ def create_config_page(notebook_to_append, config_identity):
     # 定义允许用户修改的全局变量的列表
     allowed_keys = [
         "DELAY_TIME",
+        "ENTER_NEXT_LEVEL_DELAY_TIME",
+        "CHECK_NEXT_LEVEL_DELAY_TIME",
         "COLLECT_INSTA_DELAY_TIME",
         "LOG_FILE_GRANULARITY",
         "CUSTOM_SAVE_PATH",
@@ -570,16 +574,46 @@ def create_config_page(notebook_to_append, config_identity):
             config.write(configfile)
         print(f"全局变量已保存到 {config_file}")
 
+    # 创建顶部按钮和说明文字
+    top_frame = tk.Frame(scrollable_frame_ccp)
+    top_frame.grid(row=0, column=0, columnspan=2, pady=(0, 10), sticky="nsew")
+    
+    # 保存按钮（居中）
+    apply_button_ccp = tk.Button(
+        top_frame, 
+        text="保存更改", 
+        command=lambda: apply_changes_ccp(),
+        font=("Microsoft Yahei", 10)
+    )
+    apply_button_ccp.pack(pady=5)
+    
+    # 说明文字（居中）
+    tk.Label(
+        top_frame,
+        text="如需调整全局变量，请参考教程文档进行相应设置，请勿随意修改。",
+        font=("Microsoft Yahei", 10),
+        fg="black"
+    ).pack(pady=(0, 10))
+
     # 动态生成输入框，只显示允许的键
-    row_index = 0
+    row_index = 1  # 从第1行开始，因为第0行是按钮和说明
     for key in allowed_keys:
         if key in translations:  # 检查是否有对应翻译项
             # 标签（左对齐）
-            tk.Label(scrollable_frame_ccp, text=f"{translations[key]}:", anchor="w", width=20).grid(
-                row=row_index, column=0, sticky="w", padx=10, pady=5)
+            tk.Label(
+                scrollable_frame_ccp, 
+                text=f"{translations[key]}:", 
+                anchor="w", 
+                width=20,
+                font=("Microsoft Yahei", 10)
+            ).grid(row=row_index, column=0, sticky="w", padx=10, pady=5)
 
             # 输入框（右对齐）
-            entry = tk.Entry(scrollable_frame_ccp, width=30)
+            entry = tk.Entry(
+                scrollable_frame_ccp, 
+                width=30,
+                font=("Microsoft Yahei", 10)
+            )
             entry.insert(0, getattr(config_identity, key))  # 设置初始值
             entry.grid(row=row_index, column=1, sticky="e", padx=10, pady=5)
             entry_widgets[key] = entry
@@ -610,9 +644,6 @@ def create_config_page(notebook_to_append, config_identity):
                 print(f"无法更新 {key}，请检查输入值是否正确！")
         save_global_vars()  # 保存到文件
         messagebox.showinfo("全局设置已保存", f"保存成功！【请重启脚本确认加载】")
-
-    apply_button_ccp = tk.Button(scrollable_frame_ccp, text="保存更改", command=apply_changes_ccp)
-    apply_button_ccp.grid(row=row_index, column=0, columnspan=2, pady=10)
 
     # 初次加载时调用
     load_and_update_ui()
@@ -654,11 +685,26 @@ def create_keybind_page(notebook_to_append):
             loaded_config["Keybinds"][name] = var2.get()
         with open(config_file_path, "w", encoding="utf-8-sig") as configfile:
             loaded_config.write(configfile)
-        saved_message = "\n".join([f"{name}: {var3.get()}" for name, var3 in key_mapping_vars])
+        # 每行显示3个键位配置
+
+        saved_message_list = [f"{name}: {var3.get()}" for name, var3 in key_mapping_vars]
+
+        saved_message = "\n".join(["  ".join(saved_message_list[i:i+3]) for i in range(0, len(saved_message_list), 3)])
+
         messagebox.showinfo("键位设置已保存", f"保存成功！【请重启脚本确认加载】\n当前键位配置信息:\n\n{saved_message}")
 
     keybind_page = tk.Frame(notebook_to_append)
     notebook_to_append.add(keybind_page, text="键位配置")
+
+
+    # 保存更改按钮（顶部居中）
+    apply_button_ckp = tk.Button(keybind_page, text="保存更改", font=("Microsoft Yahei", 10),
+                                command=lambda: apply_global_changes())
+    apply_button_ckp.pack(pady=8, anchor="n")  # 按钮放置在页面顶部，居中对齐
+    # 添加说明文字（按钮下方）
+    instruction_label = tk.Label(keybind_page, text="如需自定义组合键（如 hift+a），请手动打开 custom_keybind.ini 修改",
+                                font=("Microsoft Yahei", 10), fg="black")
+    instruction_label.pack(pady=5, anchor="n")  # 说明文字放置在按钮下方，居中对齐
 
     # 创建滚动区域
     canvas = tk.Canvas(keybind_page)
@@ -685,8 +731,11 @@ def create_keybind_page(notebook_to_append):
 
     right_column_items = [
         "出售", "播放/快进", "暂停", "激活技能1", "激活技能2", "激活技能3", "激活技能4", "激活技能5",
-        "激活技能6", "激活技能7", "激活技能8", "激活技能9", "激活技能10"
+        "激活技能6", "激活技能7", "激活技能8", "激活技能9", "激活技能10",
+        "激活技能11", "激活技能12", "路钉", "MOAB地雷", "胶水陷阱", "迷彩陷阱", "香蕉农夫",
+        "科技机器人", "充能图腾", "浮桥", "便携式湖", "超猴侠风暴", "猴子士气提升", "茁壮成长", "飞镖时间", "现金天降"
     ]
+
 
     left_column = tk.Frame(scrollable_frame)
     left_column.grid(row=0, column=0, padx=10, pady=10, sticky="n")
@@ -723,10 +772,6 @@ def create_keybind_page(notebook_to_append):
             dropdown.pack(side="right", padx=2)
 
     load_keybinds()  # 用ini文件中的值代替下拉框中的显示值
-
-    apply_button_ckp = tk.Button(right_column, text="应用更改", font=("Microsoft Yahei", 12),
-                                 command=lambda: apply_global_changes())
-    apply_button_ckp.pack(pady=20)
 
 
 # ==== 坐标颜色抓取页面 ====
