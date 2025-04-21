@@ -13,6 +13,9 @@ def write_game_log(log_text, save_path=config.CUSTOM_SAVE_PATH):
     """
     # CUSTOM_SAVE_PATH = "D:\\Desktop\\BTD6"
 
+    if config.LOG_FILE_GRANULARITY < 1:
+        return
+
     try:
         # 检查保存路径是否存在，如果不存在则创建
         if not os.path.exists(save_path):

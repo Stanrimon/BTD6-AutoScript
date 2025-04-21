@@ -27,7 +27,7 @@ config_file_path = "custom_keybind.ini"
 
 # ==== 主窗口初始化 ====
 root = tk.Tk()
-root.title("气球塔防6脚本控制面板-龙雕心文")
+root.title("气球塔防6器灵-龙雕心文")
 root.geometry("500x600")
 hook_id = None
 
@@ -188,11 +188,17 @@ def create_main_page(root):
 
     # ==== 启动脚本 ====
     def start_script():
+
         start_button.config(text=f"停止脚本（{resoved_keybind_stop_script}）", bg="red", fg="white")
+
         config.SCRIPT_STOP = 0
 
         selected_mode = run_mode_var.get()
-        repeat_times = config.REPEAT_TIMES
+        # 在这里实时读取 repeat_scale 的值
+
+        repeat_times = int(repeat_scale.get())
+        if repeat_times == 0:
+            repeat_times = 99999  # 循环次数为0时代表无限
         find_and_focus_window()
 
         # 游戏开始时清空指令显示
@@ -353,7 +359,7 @@ def create_main_page(root):
 
     # ==== 主页面内容 ====
     # ==== 标题 ====
-    title_label = tk.Label(main_page, text="气球塔防6脚本控制面板-20250420更新V48", font=("Microsoft Yahei", 16, "bold"))
+    title_label = tk.Label(main_page, text="气球塔防6器灵3.0-20250421更新V48", font=("Microsoft Yahei", 16, "bold"))
     title_label.pack(pady=10)
 
     # ==== 循环次数滑动条 ====
