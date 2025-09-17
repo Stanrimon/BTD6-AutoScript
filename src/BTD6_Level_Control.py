@@ -515,8 +515,7 @@ def collect_insta():
 
     while True:
         print("查找‘收集’按钮")
-        # 将颜色值从 BGR 转换为 RGB
-        color_pos = find_color_ex(685, 494, 690, 499, "3CD500", 0, 0.9)  # BGR "00D53C" -> RGB "3CD500"
+        color_pos = find_color_ex(685, 494, 690, 499, "3CD500", 0, 0.9)
         if color_pos:
             intX, intY = map(int, color_pos.split('|'))
             if intX > 0 and intY > 0:  # “收集”按钮可用
@@ -527,28 +526,28 @@ def collect_insta():
                 delay(3000)
 
                 print("查找 insta 猴")
-                color_pos = find_color_ex(544, 378, 549, 383, "FFFFFF", 0, 0.8)  # BGR "FFFFFF" -> RGB "FFFFFF"
+                color_pos = find_color_ex(544, 378, 549, 383, "FFFFFF", 0, 0.8)
                 if color_pos: # 只有两个 insta 猴
                     print("找到两个 insta 猴")
                     delay()
                     move2(544, 378)
                     delay()
                     left_click(1)
-                    delay(800)
+                    delay(1500)
                     if config.LOG_FILE_GRANULARITY >= 3:  # 截图 insta 猴保存
                         print("截图保存 insta 猴")
                         save_screenshot(424, 204, 863, 607, config.CUSTOM_SAVE_PATH)
                     left_click(1)
-                    delay(800)
+                    delay(1500)
                     move2(744, 378)
                     delay()
                     left_click(1)
-                    delay(800)
+                    delay(1500)
                     if config.LOG_FILE_GRANULARITY >= 3:  # 截图 insta 猴保存
                         print("截图保存 insta 猴")
                         save_screenshot(424, 204, 863, 607, config.CUSTOM_SAVE_PATH)
                     left_click(1)
-                    delay(800)
+                    delay(1500)
                     if config.LOG_FILE_GRANULARITY >= 1:  # 记录日志
                         print("记录日志：收集到 Insta 猴 x 2")
                         write_game_log("收集到Insta猴 x 2", config.CUSTOM_SAVE_PATH)
@@ -559,39 +558,39 @@ def collect_insta():
                     move2(444, 378)
                     delay()
                     left_click(1)
-                    delay(800)
+                    delay(1500)
                     if config.LOG_FILE_GRANULARITY >= 3:  # 截图 insta 猴保存
                         print("截图保存 insta 猴")
                         save_screenshot(424, 204, 863, 607, config.CUSTOM_SAVE_PATH)
                     left_click(1)
-                    delay(800)
+                    delay(1500)
                     move2(644, 378)
                     delay()
                     left_click(1)
-                    delay(800)
+                    delay(1500)
                     if config.LOG_FILE_GRANULARITY >= 3:  # 截图 insta 猴保存
                         print("截图保存 insta 猴")
                         save_screenshot(424, 204, 863, 607, config.CUSTOM_SAVE_PATH)
                     left_click(1)
-                    delay(800)
+                    delay(1500)
                     move2(844, 378)
                     delay()
                     left_click(1)
-                    delay(800)
+                    delay(1500)
                     if config.LOG_FILE_GRANULARITY >= 3:  # 截图 insta 猴保存
                         print("截图保存 insta 猴")
                         save_screenshot(424, 204, 863, 607, config.CUSTOM_SAVE_PATH)
                     left_click(1)
-                    delay(800)
+                    delay(1500)
                     if config.LOG_FILE_GRANULARITY >= 1:  # 记录日志
                         print("记录日志：收集到 Insta 猴 x 3")
                         write_game_log("收集到Insta猴 x 3", config.CUSTOM_SAVE_PATH)
 
                 print("点击‘继续’按钮")
                 move2(685, 707)  # 继续
-                delay()
+                delay(1500)
                 left_click(1)
-                delay(500)
+                delay(1500)
 
                 print("判断礼物是否开完")
                 color_pos = find_color_ex(34, 75, 39, 80, "00CAF8", 0, 0.9)  # BGR "F8CA00" -> RGB "00CAF8"

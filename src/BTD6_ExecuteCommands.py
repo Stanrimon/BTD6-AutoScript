@@ -4,7 +4,7 @@ import warnings
 from openpyxl import load_workbook
 from pynput.keyboard import Controller
 
-from BTD6_Key_and_Mouse_Controls import move2, left_click, delay, key_press
+from BTD6_Key_and_Mouse_Controls import move2, left_click, scroll_up, scroll_down, delay, key_press
 from BTD6_Level_Control import wait_level, change_game_speed, GameRestartException, toggle_autostart, \
     LevelRetryException, resovle_keybind
 from BTD6_Monkeys_Controls import monkey_place, monkey_place_desperate, monkey_upgrade, monkey_sell, \
@@ -365,7 +365,7 @@ def execute_command(row):
             )
 
     elif command == "鼠标点击":
-        if initial_param == 0:  # 若不指明延时，则设定默认延时时间
+        if initial_param == 0:  # 若不指明次数，则设定默认次数
             initial_param = 1
         print(f"执行指令：鼠标点击{initial_param}次（如无数据默认为1）")
         left_click(initial_param)
@@ -373,6 +373,30 @@ def execute_command(row):
         if config.LOG_FILE_GRANULARITY >= 2:  # 记录日志
             write_game_log(
                 f"自定义动作：左键单击{initial_param}次",
+                config.CUSTOM_SAVE_PATH
+            )
+
+    elif command == "鼠标上滚":
+        if initial_param == 0:  # 若不指明次数，则设定默认次数
+            initial_param = 1
+        print(f"执行指令：鼠标上滚{initial_param}次（如无数据默认为1）")
+        scroll_up(initial_param)
+
+        if config.LOG_FILE_GRANULARITY >= 2:  # 记录日志
+            write_game_log(
+                f"自定义动作：鼠标上滚{initial_param}次",
+                config.CUSTOM_SAVE_PATH
+            )
+
+    elif command == "鼠标下滚":
+        if initial_param == 0:  # 若不指明次数，则设定默认次数
+            initial_param = 1
+        print(f"执行指令：鼠标下滚{initial_param}次（如无数据默认为1）")
+        scroll_down(initial_param)
+
+        if config.LOG_FILE_GRANULARITY >= 2:  # 记录日志
+            write_game_log(
+                f"自定义动作：鼠标下滚{initial_param}次",
                 config.CUSTOM_SAVE_PATH
             )
 

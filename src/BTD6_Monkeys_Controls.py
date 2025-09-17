@@ -265,11 +265,12 @@ def monkey_retarget_aim(monkey, mode, target_x, target_y):
         l = resovle_keybind("工程师猴", 'l')
         m = resovle_keybind("机枪猴", 'm')
         n = resovle_keybind("迫击炮猴", 'n')
+        j = resovle_keybind("刺钉工厂", 'n')
         a = resovle_keybind("法师猴", 'a')
         x = resovle_keybind("猴子潜艇", 'x')
         v = resovle_keybind("皇家飞行员", 'v')
 
-        if monkey.key in [b, l, m, n, "直升机飞行员", "工程师猴", "机枪猴", "迫击炮猴"]:  # 直升机/工程师/机枪猴/迫击炮的瞄准：直接点瞄准键、鼠标对应位置点击
+        if monkey.key in [b, l, m, n, j, "直升机飞行员", "工程师猴", "机枪猴", "迫击炮猴", "刺钉工厂"]:  # 直升机/工程师/机枪猴/迫击炮的瞄准：直接点瞄准键、鼠标对应位置点击
             key_press('特制猴子')
             move2(target_x, target_y)
             left_click()

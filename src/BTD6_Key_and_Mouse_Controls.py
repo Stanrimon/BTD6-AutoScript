@@ -7,28 +7,33 @@ from pynput.keyboard import Controller, Key, Listener
 pyautogui.PAUSE = 0  # 移除全局延迟
 keyboard = Controller()
 
+
 # 实现按方向键时微调鼠标位置功能
 class ControlMouseUponKeyPress:
     def __init__(self):
         self.listener = None
         self.enabled = False
         self.lock = threading.Lock()
+
     def start_listen(self):
         """启动方向键监听"""
         with self.lock:
             if not self.listener or not self.listener.running:
                 self.listener = Listener(on_press=self._handle_keys)
                 self.listener.start()
+
     def stop_listen(self):
         """停止方向键监听"""
         with self.lock:
             if self.listener and self.listener.running:
                 self.listener.stop()
                 self.listener = None
+
     def enable_control(self, enable):
         """设置控制开关状态"""
         with self.lock:
             self.enabled = enable
+
     def _handle_keys(self, key):
         """处理方向键事件（系统级监听）"""
         with self.lock:
@@ -86,6 +91,32 @@ def left_click(times=1):
     for _ in range(times):
         pyautogui.click()  # 模拟鼠标左键点击
         delay()  # 每次点击后稍作延迟，避免过快（可调整）
+
+
+def scroll_up(times=1):
+    """
+    让鼠标滚轮向上滑动指定次数。
+    :param times: 向上滑动的次数（默认为 1 次）
+    """
+    if config.SCRIPT_STOP == 1:
+        return
+
+    for _ in range(times):
+        pyautogui.scroll(10)  # 正值表示向上滚动
+        delay()
+
+
+def scroll_down(times=1):
+    """
+    让鼠标滚轮向下滑动指定次数。
+    :param times: 向下滑动的次数（默认为 1 次）
+    """
+    if config.SCRIPT_STOP == 1:
+        return
+
+    for _ in range(times):
+        pyautogui.scroll(-10)  # 负值表示向下滚动
+        delay()
 
 
 def key_press(key, times=1):
@@ -205,8 +236,7 @@ def key_press(key, times=1):
                         print(f"警告：无法识别按键或操作 '{k}'")
                         return None
         return key_objs
-    
-    
+
     # 如果输入的 key 是操作名称（如"飞镖猴"），通过 keybind_config 获取对应的按键
     if isinstance(key, str) and key not in special_keys and len(key) > 1 and '+' not in key:
         resolved_key = keybind_config.get_key(key)
@@ -219,29 +249,29 @@ def key_press(key, times=1):
         if config.SCRIPT_STOP == 1:
             return
         delay(0.65 * config.DELAY_TIME)
-        
+
         if isinstance(key, str) and '+' in key:
             # 处理组合键
             key_objs = parse_combo_key(key)
             if not key_objs:
                 return
-                
+
             # 按下所有修饰键
             for k in key_objs[:-1]:
                 keyboard.press(k)
                 delay(0.1 * config.DELAY_TIME)
-                
+
             # 按下并释放主键
             main_key = key_objs[-1]
             keyboard.press(main_key)
             delay(0.35 * config.DELAY_TIME)
             keyboard.release(main_key)
-            
+
             # 释放所有修饰键
             for k in reversed(key_objs[:-1]):
                 keyboard.release(k)
                 delay(0.1 * config.DELAY_TIME)
-                
+
         elif isinstance(key, str) and key in special_keys:
             # 单个特殊按键
             keyboard.press(special_keys[key])
@@ -252,4 +282,3 @@ def key_press(key, times=1):
             keyboard.press(key)
             delay(0.35 * config.DELAY_TIME)
             keyboard.release(key)
-

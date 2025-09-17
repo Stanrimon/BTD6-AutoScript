@@ -359,7 +359,7 @@ def create_main_page(root):
 
     # ==== 主页面内容 ====
     # ==== 标题 ====
-    title_label = tk.Label(main_page, text="气球塔防6器灵3.0-20250421更新V48", font=("Microsoft Yahei", 16, "bold"))
+    title_label = tk.Label(main_page, text="气球塔防6器灵3.1-20250917更新-V50.2", font=("Microsoft Yahei", 16, "bold"))
     title_label.pack(pady=10)
 
     # ==== 循环次数滑动条 ====
@@ -708,7 +708,7 @@ def create_keybind_page(notebook_to_append):
                                 command=lambda: apply_global_changes())
     apply_button_ckp.pack(pady=8, anchor="n")  # 按钮放置在页面顶部，居中对齐
     # 添加说明文字（按钮下方）
-    instruction_label = tk.Label(keybind_page, text="如需自定义组合键（如 hift+a），请手动打开 custom_keybind.ini 修改",
+    instruction_label = tk.Label(keybind_page, text="如需自定义组合键（如 shift+a），请手动打开 custom_keybind.ini 修改",
                                 font=("Microsoft Yahei", 10), fg="black")
     instruction_label.pack(pady=5, anchor="n")  # 说明文字放置在按钮下方，居中对齐
 
@@ -728,7 +728,7 @@ def create_keybind_page(notebook_to_append):
     scroll_y.pack(side="right", fill="y")
 
     left_column_items = [
-        "开始脚本", "停止脚本", "飞镖猴", "回旋镖猴", "大炮", "图钉塔", "冰猴", "胶水炮手",
+        "开始脚本", "停止脚本", "飞镖猴", "回旋镖猴", "大炮", "图钉塔", "冰猴", "胶水炮手", "亡命猴",
         "狙击手猴", "猴子潜艇", "海盗猴", "皇家飞行员", "直升机飞行员", "迫击炮猴", "机枪猴",
         "法师猴", "超猴侠", "忍者猴", "炼金术师", "德鲁伊", "人鱼猴子",
         "香蕉农场", "刺钉工厂", "猴子村", "工程师猴", "野兽之主",
