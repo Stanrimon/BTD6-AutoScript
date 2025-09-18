@@ -1,5 +1,14 @@
 import configparser
 import os
+import sys
+
+# 有关日志生成的具体位置
+if getattr(sys, 'frozen', False):  # 用于检查程序是否被打包（"frozen"状态），PyInstaller 等打包工具会设置 sys.frozen = True
+    # 如果是打包后的 .exe 文件，则 application_path 为 .exe 文件所在的目录
+    application_path = os.path.dirname(sys.executable)
+else:
+    # 如果是直接运行的 .py 文件，则 application_path- 为 .py 文件所在的目录
+    application_path = os.path.dirname(os.path.abspath(__file__))
 
 
 class GlobalConfig:
@@ -10,7 +19,7 @@ class GlobalConfig:
         "ENTER_NEXT_LEVEL_DELAY_TIME": 500,
         "CHECK_NEXT_LEVEL_DELAY_TIME": 100,
         "LOG_FILE_GRANULARITY": 3,
-        "CUSTOM_SAVE_PATH": os.path.join(os.path.dirname(os.path.abspath(__file__)), "气球塔防6脚本日志"),
+        "CUSTOM_SAVE_PATH": os.path.join(application_path, "日志文件夹"),
         "REPEAT_TIMES": 1,
         "SELECTED_FILE": 0,
         "SELECTED_FILES": 0,
@@ -253,13 +262,12 @@ KEY_OPTIONS = [
     # 平台键
     "cmd", "cmd_r"
 
-    #组合键
-    "shift+1", "shift+2", "shift+3", "shift+4", "shift+5", 
-    "shift+6", "shift+7", "shift+8", "shift+9", "shift+0", 
+    # 组合键
+           "shift+1", "shift+2", "shift+3", "shift+4", "shift+5",
+    "shift+6", "shift+7", "shift+8", "shift+9", "shift+0",
     "shift+-", "shift+=", "shift+[", "shift+]"
 
 ]
-
 
 # 默认键位配置
 DEFAULT_KEY_MAPPING = [
