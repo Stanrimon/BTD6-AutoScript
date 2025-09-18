@@ -407,15 +407,15 @@ def get_insta_map_name() -> str:
     :return: 地图名称的字符串，如果未找到匹配的地图则返回 "Unknown"
     """
     move2(640, 660)  # 开始
-    delay()
+    delay(200)
     left_click(1)
     delay()
     move2(53, 138)  # 搜索
-    delay()
+    delay(500)
     left_click(1)
     delay()
     move2(910, 55)  # insta
-    delay()
+    delay(500)
     left_click(1)
     delay(500)
 
