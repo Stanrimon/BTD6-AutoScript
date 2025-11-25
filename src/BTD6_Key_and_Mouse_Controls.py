@@ -93,6 +93,46 @@ def left_click(times=1):
         delay()  # 每次点击后稍作延迟，避免过快（可调整）
 
 
+def left_down():
+    """
+    模拟鼠标左键按下。
+    """
+    if config.SCRIPT_STOP == 1:
+        return
+    pyautogui.mouseDown(button='left')
+    delay()
+
+
+def left_up():
+    """
+    模拟鼠标左键弹起。
+    """
+    if config.SCRIPT_STOP == 1:
+        return
+    pyautogui.mouseUp(button='left')
+    delay()
+
+
+def right_down():
+    """
+    模拟鼠标右键按下。
+    """
+    if config.SCRIPT_STOP == 1:
+        return
+    pyautogui.mouseDown(button='right')
+    delay()
+
+
+def right_up():
+    """
+    模拟鼠标右键弹起。
+    """
+    if config.SCRIPT_STOP == 1:
+        return
+    pyautogui.mouseUp(button='right')
+    delay()
+
+
 def scroll_up(times=1):
     """
     让鼠标滚轮向上滑动指定次数。

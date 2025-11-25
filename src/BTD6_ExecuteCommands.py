@@ -4,7 +4,8 @@ import warnings
 from openpyxl import load_workbook
 from pynput.keyboard import Controller
 
-from BTD6_Key_and_Mouse_Controls import move2, left_click, scroll_up, scroll_down, delay, key_press
+from BTD6_Key_and_Mouse_Controls import move2, left_click, left_down, left_up, right_down, right_up, scroll_up, \
+    scroll_down, delay, key_press
 from BTD6_Level_Control import wait_level, change_game_speed, GameRestartException, toggle_autostart, \
     LevelRetryException, resovle_keybind
 from BTD6_Monkeys_Controls import monkey_place, monkey_place_desperate, monkey_upgrade, monkey_sell, \
@@ -14,8 +15,6 @@ from BTD6_TraceLogs import write_game_log
 from config import config, global_text
 
 keyboard = Controller()
-monkeys_xlsx_file_path = r"D:\Desktop\mk.xlsx"
-commands_xlsx_file_path = r"D:\Desktop\cm.xlsx"
 
 
 # 定义猴子状态的存储结构
@@ -138,7 +137,7 @@ def load_initial_state(file_path):
             except ValueError:
                 raise ValueError(f"请输入正确的地图难度或数字格式(如'1,80')。当前输入：{initial_param}")
         else:
-                
+
             if initial_param in ("简单", "仅初级"):
                 config.START_GAME_LEVEL, config.MAX_GAME_LEVEL = 1, 40
             elif initial_param in ("简单快速路径", "仅初级快速路径"):
@@ -376,6 +375,82 @@ def execute_command(row):
                 config.CUSTOM_SAVE_PATH
             )
 
+    elif command == "鼠标左键按下":
+        print(f"执行指令：鼠标左键按下")
+        left_down()
+
+        if config.LOG_FILE_GRANULARITY >= 2:  # 记录日志
+            write_game_log(
+                f"自定义动作：鼠标左键按下",
+                config.CUSTOM_SAVE_PATH
+            )
+
+    elif command == "鼠标左键弹起":
+        print(f"执行指令：鼠标左键弹起")
+        left_up()
+
+        if config.LOG_FILE_GRANULARITY >= 2:  # 记录日志
+            write_game_log(
+                f"自定义动作：鼠标左键弹起",
+                config.CUSTOM_SAVE_PATH
+            )
+
+    elif command == "鼠标右键按下":
+        print(f"执行指令：鼠标右键按下")
+        right_down()
+
+        if config.LOG_FILE_GRANULARITY >= 2:  # 记录日志
+            write_game_log(
+                f"自定义动作：鼠标右键按下",
+                config.CUSTOM_SAVE_PATH
+            )
+
+    elif command == "鼠标右键弹起":
+        print(f"执行指令：鼠标右键弹起")
+        right_up()
+
+        if config.LOG_FILE_GRANULARITY >= 2:  # 记录日志
+            write_game_log(
+                f"自定义动作：鼠标右键弹起",
+                config.CUSTOM_SAVE_PATH
+            )
+
+    elif command == "鼠标左键按下拖动弹起":
+        if not x or not y or not target_path1 or not target_path2:
+            raise ValueError(f"鼠标左键按下拖动弹起时缺少必要参数：x1={x}, y1={y}, x2={target_path1}, y2={target_path2}")
+
+        print(f"执行指令：鼠标移动至{x},{y}并按下左键，延时{initial_param}毫秒后，拖动至{target_path1},{target_path2}，然后弹起")
+        move2(x, y)
+        left_down()
+        if initial_param:
+            delay(initial_param)
+        move2(target_path1, target_path2)
+        left_up()
+
+        if config.LOG_FILE_GRANULARITY >= 2:  # 记录日志
+            write_game_log(
+                f"自定义动作：鼠标左键从{x},{y}按下，延时{initial_param}毫秒后，拖动至{target_path1},{target_path2}后弹起",
+                config.CUSTOM_SAVE_PATH
+            )
+
+    elif command == "鼠标右键按下拖动弹起":
+        if not x or not y or not target_path1 or not target_path2:
+            raise ValueError(f"鼠标右键按下拖动弹起时缺少必要参数：x1={x}, y1={y}, x2={target_path1}, y2={target_path2}")
+
+        print(f"执行指令：鼠标移动至{x},{y}并按下右键，延时{initial_param}毫秒后，拖动至{target_path1},{target_path2}，然后弹起")
+        move2(x, y)
+        right_down()
+        if initial_param:
+            delay(initial_param)
+        move2(target_path1, target_path2)
+        right_up()
+
+        if config.LOG_FILE_GRANULARITY >= 2:  # 记录日志
+            write_game_log(
+                f"自定义动作：鼠标右键从{x},{y}按下，延时{initial_param}毫秒后，拖动至{target_path1},{target_path2}后弹起",
+                config.CUSTOM_SAVE_PATH
+            )
+
     elif command == "鼠标上滚":
         if initial_param == 0:  # 若不指明次数，则设定默认次数
             initial_param = 1
@@ -402,10 +477,9 @@ def execute_command(row):
 
     elif command == "延时移动点击":
         move2(x, y)
-        if initial_param == 0:  # 若不指明延时，则设定默认延时时间
-            initial_param = config.DELAY_TIME
 
-        delay(initial_param)
+        if initial_param:
+            delay(initial_param)
         print(f"执行指令：延时{initial_param}毫秒后，鼠标移动至{x},{y}，点击1次")
         left_click()
 
@@ -416,10 +490,8 @@ def execute_command(row):
             )
 
     elif command == "延时按键":
-        if initial_param == 0:
-            initial_param = config.DELAY_TIME
-
-        delay(initial_param)
+        if initial_param:
+            delay(initial_param)
         print(f"执行指令：延时{initial_param}毫秒后，按键{key}1次")
         key_press(key, 1)
 
@@ -447,6 +519,24 @@ def execute_command(row):
         if config.LOG_FILE_GRANULARITY >= 2:  # 记录日志
             write_game_log(
                 f"速度调整为{initial_param}倍速",
+                config.CUSTOM_SAVE_PATH
+            )
+
+    elif command == "强制判定关卡完成":
+        print(f"执行指令：强制判定关卡完成")
+        config.NOW_GAME_LEVEL += 1
+        if config.LOG_FILE_GRANULARITY >= 1:  # 记录日志
+            write_game_log(
+                f"强制判定关卡完成",
+                config.CUSTOM_SAVE_PATH
+            )
+
+    elif command == "强制判定本局完成":
+        print(f"执行指令：强制判定本局完成")
+        config.NOW_GAME_LEVEL = config.MAX_GAME_LEVEL + 1
+        if config.LOG_FILE_GRANULARITY >= 1:  # 记录日志
+            write_game_log(
+                f"强制判定本局完成",
                 config.CUSTOM_SAVE_PATH
             )
 
@@ -525,7 +615,6 @@ def execute_commands(file_path):
 
                 # 将关前停顿插入到当前关卡指令的最前面
                 level_commands[level] = pause_commands + other_commands
-
 
             # 生成关前停顿关卡列表
             levels_with_stops = []
@@ -743,22 +832,29 @@ def execute_level_commands(level, command_list):
 
 
 # 主游戏逻辑
-def play_game(file_path):
+def play_game(file_path, highly_custom=0):
     """
     主游戏逻辑，处理游戏重启和指令执行
     """
-    while True:  # 外层循环用于重启整个游戏
-        try:
-            print("开始新一局游戏...")
-            config.IF_GERALDO_PLACED_LEFT = config.IF_SHOP_OPENED = 0
-            load_initial_state(file_path)
-            execute_commands(file_path)  # 从 xlsx 文件加载并执行指令
-            print("游戏完成！")
-            break  # 如果游戏顺利完成，退出循环
+    if highly_custom:  # 高度自定义模式，不尝试重新开始游戏
+        config.IF_GERALDO_PLACED_LEFT = config.IF_SHOP_OPENED = 0
+        load_initial_state(file_path)
+        execute_commands(file_path)  # 从 xlsx 文件加载并执行指令
+        print("游戏完成！")
 
-        except GameRestartException:
-            print("重新开始游戏！")
-            continue  # 捕获自定义异常，重新开始游戏逻辑
+    else:  # 一般模式，会尝试重新开始游戏
+        while True:  # 外层循环用于重启整个游戏
+            try:
+                print("开始新一局游戏...")
+                config.IF_GERALDO_PLACED_LEFT = config.IF_SHOP_OPENED = 0
+                load_initial_state(file_path)
+                execute_commands(file_path)  # 从 xlsx 文件加载并执行指令
+                print("游戏完成！")
+                break  # 如果游戏顺利完成，退出循环
+
+            except GameRestartException:
+                print("重新开始游戏！")
+                continue  # 捕获自定义异常，重新开始游戏逻辑
 
 
 def play_game_test_placement(file_path):

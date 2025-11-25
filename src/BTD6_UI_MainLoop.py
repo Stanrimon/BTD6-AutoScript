@@ -130,12 +130,13 @@ def create_main_page(root):
                 else:
                     messagebox.showwarning("未选择文件", "您没有选择任何文件。")
 
-
             elif selected_mode == "循环刷insta猴":
-                file_paths = filedialog.askopenfilenames(title="请选择包含12个专家图的xlsx文件", filetypes=[("xlsx files", "*.xlsx")])
+                file_paths = filedialog.askopenfilenames(title="请选择包含12个专家图的xlsx文件",
+                                                         filetypes=[("xlsx files", "*.xlsx")])
                 if file_paths:
                     # 检查文件名是否包含所有必要的地图关键词
-                    required_maps = ["冰河之径", "黑暗地下城", "避难所", "峡谷", "水淹山谷", "炼狱", "血腥水坑", "工坊", "方院", "黑暗城堡", "泥泞的水坑", "#哎哟"]
+                    required_maps = ["冰河之径", "黑暗地下城", "避难所", "峡谷", "水淹山谷", "炼狱", "血腥水坑", "工坊", "方院", "黑暗城堡", "泥泞的水坑",
+                                     "#哎哟"]
                     missing_maps = []
                     for map_name in required_maps:
                         found = False
@@ -146,7 +147,9 @@ def create_main_page(root):
                         if not found:
                             missing_maps.append(map_name)
                     if missing_maps:
-                        messagebox.showerror("关卡文件缺失", f"关卡文件缺失：{', '.join(missing_maps)}\n刷insta活动需要识别所有专家图阵型，文件名需要包含地图名称。\n请确保选择了所有专家图的阵型，或修改所选文件的文件名")
+                        messagebox.showerror("关卡文件缺失",
+                                             f"关卡文件缺失：{', '.join(missing_maps)}\n刷insta活动需要识别所有专家图阵型，文件名需要包含地图名称。\n"
+                                             f"请确保选择了所有专家图的阵型，或修改所选文件的文件名")
                         return
                     # 按自然顺序排序文件路径
                     sorted_files = sorted(file_paths, key=natural_sort_key)
@@ -157,7 +160,6 @@ def create_main_page(root):
                         selected_files_listbox.insert(tk.END, os.path.basename(path))
                 else:
                     messagebox.showwarning("未选择文件", "您没有选择任何文件。")
-
 
             elif selected_mode == "模拟关卡放置":
                 file_path = filedialog.askopenfilename(title="选择单一关卡的 xlsx 文件", filetypes=[("xlsx files", "*.xlsx")])
@@ -181,6 +183,23 @@ def create_main_page(root):
                 else:
                     messagebox.showwarning("未选择文件", "您没有选择任何 xlsx 文件。")
                     return
+
+            elif selected_mode == "高度自定义：单个/多个文件循环，无返回主菜单或insta判断":
+                messagebox.showinfo("注意",
+                                    "此模式可用来自定义需要进入的模式以及所有界面操作，例如征程、竞速等。"
+                                    "如需从主菜单进入某模式/返回主菜单，所有进入、退出游戏所需操作完全在excel文件中自由更改。")
+                file_paths = filedialog.askopenfilenames(title="请选择任意数量文件", filetypes=[("xlsx files", "*.xlsx")])
+                if file_paths:
+                    # 按自然顺序排序文件路径
+                    sorted_files = sorted(file_paths, key=natural_sort_key)
+                    config.SELECTED_FILES = sorted_files  # 存储排序后的列表
+                    print(f"选择的文件路径列表: {file_paths}")
+                    # 显示所有文件名
+                    for path in sorted_files:
+                        selected_files_listbox.insert(tk.END, os.path.basename(path))
+
+                else:
+                    messagebox.showwarning("未选择文件", "您没有选择任何文件。")
 
             messagebox.showinfo("设置完成", f"运行模式: {selected_mode}\n循环次数: {repeat_times}")
         except ValueError:
@@ -225,9 +244,9 @@ def create_main_page(root):
                 print(f"运行模式1，文件: {config.SELECTED_FILE}")
                 if config.LOG_FILE_GRANULARITY >= 1:
                     write_game_log(f"当前模式：单个文件循环，运行文件 {config.SELECTED_FILE} ",
-                                    config.CUSTOM_SAVE_PATH
-                                    )
-                    
+                                   config.CUSTOM_SAVE_PATH
+                                   )
+
                 play_game(config.SELECTED_FILE)
                 return_to_menu()
                 collect_insta()
@@ -267,9 +286,9 @@ def create_main_page(root):
                 print(f"运行模式2，文件: {file_path}")
                 if config.LOG_FILE_GRANULARITY >= 1:
                     write_game_log(f"当前模式：多个文件循环，运行文件 {file_path} ",
-                                    config.CUSTOM_SAVE_PATH
-                                    )
-                    
+                                   config.CUSTOM_SAVE_PATH
+                                   )
+
                 play_game(file_path)
                 return_to_menu()
                 collect_insta()
@@ -281,7 +300,6 @@ def create_main_page(root):
                 # 更新文件索引并循环
                 file_index = (file_index + 1) % num_files
                 total_loops += 1
-
 
         elif selected_mode == "循环刷insta猴":
             if not hasattr(config, "SELECTED_FILES") or not config.SELECTED_FILES:
@@ -314,9 +332,9 @@ def create_main_page(root):
                 print(f"运行模式3，文件: {file_path}")
                 if config.LOG_FILE_GRANULARITY >= 1:
                     write_game_log(f"当前模式：循环刷insta猴，运行文件 {file_path} ",
-                                    config.CUSTOM_SAVE_PATH
-                                    )
-                    
+                                   config.CUSTOM_SAVE_PATH
+                                   )
+
                 play_game(file_path)
                 return_to_menu()
                 collect_insta()
@@ -326,7 +344,6 @@ def create_main_page(root):
                     f"进度({n + 1}/{repeat_times})，当前文件: {c}"))
                 total_loops += 1
 
-                
         elif selected_mode == "模拟关卡放置":
             # 更新当前文件显示
             current_file = os.path.basename(config.SELECTED_FILE)
@@ -346,20 +363,63 @@ def create_main_page(root):
                 print(f"运行模式4，文件: {config.SELECTED_FILE}")
                 if config.LOG_FILE_GRANULARITY >= 1:
                     write_game_log(f"当前模式：模拟关卡放置，运行文件 {config.SELECTED_FILE} ",
-                                    config.CUSTOM_SAVE_PATH
-                                    )
+                                   config.CUSTOM_SAVE_PATH
+                                   )
                 play_game_test_placement(config.SELECTED_FILE)
 
                 # 更新已完成数量
                 root.after(0, lambda c=current_file, n=i: current_file_var.set(
                     f"进度({n + 1}/{repeat_times})，当前文件: {c}"))
 
+        elif selected_mode == "高度自定义：单个/多个文件循环，无返回主菜单或insta判断":
+            if not hasattr(config, "SELECTED_FILES") or not config.SELECTED_FILES:
+                messagebox.showerror("错误", "未选择任何文件，请先应用设置。")
+                return
+
+            # 确保 SELECTED_FILES 是列表
+            # config.SELECTED_FILES = list(config.SELECTED_FILES)
+
+            total_loops = 0
+            file_index = 0  # 用于追踪当前运行到哪个文件
+            num_files = len(config.SELECTED_FILES)  # 文件总数
+            while total_loops < repeat_times:
+                if config.SCRIPT_STOP == 1:
+                    return
+                config.new_game_reset()
+                find_and_focus_window()
+                if total_loops >= repeat_times:
+                    break
+                # 取当前索引对应的文件
+
+                file_path = config.SELECTED_FILES[file_index]
+
+                # 更新当前文件显示、已完成数量
+                current_file = os.path.basename(file_path)
+                root.after(0, lambda f=current_file, n=total_loops: current_file_var.set(
+                    f"进度({n}/{repeat_times})，当前文件: {f}"))
+
+                print(f"运行模式5，文件: {file_path}")
+                if config.LOG_FILE_GRANULARITY >= 1:
+                    write_game_log(f"当前模式：高度自定义：单个/多个文件循环，无返回主菜单或insta判断，运行文件 {file_path} ",
+                                   config.CUSTOM_SAVE_PATH
+                                   )
+
+                play_game(file_path, highly_custom=1)  # 高度自定义模式，不尝试重新开始游戏
+
+                # 更新已完成数量
+                root.after(0, lambda c=current_file, n=total_loops: current_file_var.set(
+                    f"进度({n + 1}/{repeat_times})，当前文件: {c}"))
+
+                # 更新文件索引并循环
+                file_index = (file_index + 1) % num_files
+                total_loops += 1
+
         print("脚本运行完成！")
         key_press(keybind_config.get_key("停止脚本"), 1)
 
     # ==== 主页面内容 ====
     # ==== 标题 ====
-    title_label = tk.Label(main_page, text="气球塔防6器灵3.2-20250918更新-V50.2", font=("Microsoft Yahei", 16, "bold"))
+    title_label = tk.Label(main_page, text="气球塔防6器灵3.3-20251125更新-V51.2", font=("Microsoft Yahei", 16, "bold"))
     title_label.pack(pady=10)
 
     # ==== 循环次数滑动条 ====
@@ -392,7 +452,9 @@ def create_main_page(root):
 
     run_mode_var = tk.StringVar(value="选择单一关卡的 xlsx 文件")
     mode_dropdown = ttk.Combobox(mode_frame, textvariable=run_mode_var,
-                                 values=["选择单一关卡的 xlsx 文件", "选择多个文件循环", "循环刷insta猴", "模拟关卡放置"])  # "循环刷insta猴"制作中
+                                 values=["选择单一关卡的 xlsx 文件", "选择多个文件循环", "循环刷insta猴", "模拟关卡放置",
+                                         "高度自定义：单个/多个文件循环，无返回主菜单或insta判断"],
+                                 width=50)
     mode_dropdown.pack(side="left", padx=5, expand=True)
 
     # ==== 加载关卡文件 ====
@@ -583,16 +645,16 @@ def create_config_page(notebook_to_append, config_identity):
     # 创建顶部按钮和说明文字
     top_frame = tk.Frame(scrollable_frame_ccp)
     top_frame.grid(row=0, column=0, columnspan=2, pady=(0, 10), sticky="nsew")
-    
+
     # 保存按钮（居中）
     apply_button_ccp = tk.Button(
-        top_frame, 
-        text="保存更改", 
+        top_frame,
+        text="保存更改",
         command=lambda: apply_changes_ccp(),
         font=("Microsoft Yahei", 10)
     )
     apply_button_ccp.pack(pady=5)
-    
+
     # 说明文字（居中）
     tk.Label(
         top_frame,
@@ -607,16 +669,16 @@ def create_config_page(notebook_to_append, config_identity):
         if key in translations:  # 检查是否有对应翻译项
             # 标签（左对齐）
             tk.Label(
-                scrollable_frame_ccp, 
-                text=f"{translations[key]}:", 
-                anchor="w", 
+                scrollable_frame_ccp,
+                text=f"{translations[key]}:",
+                anchor="w",
                 width=20,
                 font=("Microsoft Yahei", 10)
             ).grid(row=row_index, column=0, sticky="w", padx=10, pady=5)
 
             # 输入框（右对齐）
             entry = tk.Entry(
-                scrollable_frame_ccp, 
+                scrollable_frame_ccp,
                 width=30,
                 font=("Microsoft Yahei", 10)
             )
@@ -695,21 +757,21 @@ def create_keybind_page(notebook_to_append):
 
         saved_message_list = [f"{name}: {var3.get()}" for name, var3 in key_mapping_vars]
 
-        saved_message = "\n".join(["  ".join(saved_message_list[i:i+3]) for i in range(0, len(saved_message_list), 3)])
+        saved_message = "\n".join(
+            ["  ".join(saved_message_list[i:i + 3]) for i in range(0, len(saved_message_list), 3)])
 
         messagebox.showinfo("键位设置已保存", f"保存成功！【请重启脚本确认加载】\n当前键位配置信息:\n\n{saved_message}")
 
     keybind_page = tk.Frame(notebook_to_append)
     notebook_to_append.add(keybind_page, text="键位配置")
 
-
     # 保存更改按钮（顶部居中）
     apply_button_ckp = tk.Button(keybind_page, text="保存更改", font=("Microsoft Yahei", 10),
-                                command=lambda: apply_global_changes())
+                                 command=lambda: apply_global_changes())
     apply_button_ckp.pack(pady=8, anchor="n")  # 按钮放置在页面顶部，居中对齐
     # 添加说明文字（按钮下方）
     instruction_label = tk.Label(keybind_page, text="如需自定义组合键（如 shift+a），请手动打开 custom_keybind.ini 修改",
-                                font=("Microsoft Yahei", 10), fg="black")
+                                 font=("Microsoft Yahei", 10), fg="black")
     instruction_label.pack(pady=5, anchor="n")  # 说明文字放置在按钮下方，居中对齐
 
     # 创建滚动区域
@@ -741,7 +803,6 @@ def create_keybind_page(notebook_to_append):
         "激活技能11", "激活技能12", "路钉", "MOAB地雷", "胶水陷阱", "迷彩陷阱", "香蕉农夫",
         "科技机器人", "充能图腾", "浮桥", "便携式湖", "超猴侠风暴", "猴子士气提升", "茁壮成长", "飞镖时间", "现金天降"
     ]
-
 
     left_column = tk.Frame(scrollable_frame)
     left_column.grid(row=0, column=0, padx=10, pady=10, sticky="n")
