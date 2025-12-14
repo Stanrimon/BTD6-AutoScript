@@ -407,18 +407,23 @@ def get_insta_map_name() -> str:
     :return: 地图名称的字符串，如果未找到匹配的地图则返回 "Unknown"
     """
 
-    move2(640, 660)  # 开始
-    delay(1000)
-    left_click(1)
-    delay()
-    move2(53, 138)  # 搜索
-    delay(1000)
-    left_click(1)
-    delay()
-    move2(910, 55)  # insta
-    delay(2000)
-    left_click(1)
-    delay(500)
+    debug_flag = 0
+
+    if debug_flag == 1:
+        delay(5000)
+    else:
+        move2(640, 660)  # 开始
+        delay(200)
+        left_click(1)
+        delay()
+        move2(53, 138)  # 搜索
+        delay(1500)
+        left_click(1)
+        delay()
+        move2(910, 55)  # insta
+        delay(2000)
+        left_click(1)
+        delay(500)
 
     # 初始化地图名称为 "Unknown"
     map_name = "Unknown"
@@ -436,7 +441,7 @@ def get_insta_map_name() -> str:
     # 检查 DarkDungeons
     dark_dungeons_check_result = find_color_ex(281, 491, 286, 496, "5A5D52", 0, 0.97)
     if dark_dungeons_check_result:
-        dark_dungeons_second_check_result = find_color_ex(345, 396, 365, 416, "50C5C4", 0, 0.97)
+        dark_dungeons_second_check_result = find_color_ex(292, 465, 297, 470, "4D1913", 0, 0.97)
         if dark_dungeons_second_check_result:
             map_name = "黑暗地下城"
             print(f"insta关卡识别结果: {map_name}")
