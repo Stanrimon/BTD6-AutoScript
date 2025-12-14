@@ -131,12 +131,12 @@ def create_main_page(root):
                     messagebox.showwarning("未选择文件", "您没有选择任何文件。")
 
             elif selected_mode == "循环刷insta猴":
-                file_paths = filedialog.askopenfilenames(title="请选择包含12个专家图的xlsx文件",
+                file_paths = filedialog.askopenfilenames(title="请多选xlsx文件。对每张专家图都需选一张",
                                                          filetypes=[("xlsx files", "*.xlsx")])
                 if file_paths:
                     # 检查文件名是否包含所有必要的地图关键词
-                    required_maps = ["冰河之径", "黑暗地下城", "避难所", "峡谷", "水淹山谷", "炼狱", "血腥水坑", "工坊", "方院", "黑暗城堡", "泥泞的水坑",
-                                     "#哎哟"]
+                    required_maps = ["棘手的轨道", "冰河之径", "黑暗地下城", "避难所", "峡谷", "水淹山谷", "炼狱", "血腥水坑",
+                                     "工坊", "方院", "黑暗城堡", "泥泞的水坑", "#哎哟"]
                     missing_maps = []
                     for map_name in required_maps:
                         found = False
@@ -419,7 +419,7 @@ def create_main_page(root):
 
     # ==== 主页面内容 ====
     # ==== 标题 ====
-    title_label = tk.Label(main_page, text="气球塔防6器灵3.3-20251125更新-V51.2", font=("Microsoft Yahei", 16, "bold"))
+    title_label = tk.Label(main_page, text="气球塔防6器灵3.3-20251213更新-V52.2", font=("Microsoft Yahei", 16, "bold"))
     title_label.pack(pady=10)
 
     # ==== 循环次数滑动条 ====

@@ -406,21 +406,27 @@ def get_insta_map_name() -> str:
 
     :return: 地图名称的字符串，如果未找到匹配的地图则返回 "Unknown"
     """
+
     move2(640, 660)  # 开始
-    delay(200)
+    delay(1000)
     left_click(1)
     delay()
     move2(53, 138)  # 搜索
-    delay(500)
+    delay(1000)
     left_click(1)
     delay()
     move2(910, 55)  # insta
-    delay(500)
+    delay(2000)
     left_click(1)
     delay(500)
 
     # 初始化地图名称为 "Unknown"
     map_name = "Unknown"
+
+    # 检查 TrickyTracks
+    tricky_tracks_check_result = find_color_ex(267, 408, 272, 413, "FFFFF7", 0, 0.97)
+    if tricky_tracks_check_result:
+        map_name = "棘手的轨道"
 
     # 检查 GlacialTrail
     glacial_trail_check_result = find_color_ex(285, 497, 290, 502, "10AAC6", 0, 0.97)
