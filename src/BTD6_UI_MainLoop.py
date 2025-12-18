@@ -419,7 +419,7 @@ def create_main_page(root):
 
     # ==== 主页面内容 ====
     # ==== 标题 ====
-    title_label = tk.Label(main_page, text="气球塔防6器灵3.3-20251213更新-V52.2", font=("Microsoft Yahei", 16, "bold"))
+    title_label = tk.Label(main_page, text="气球塔防6器灵3.3-20251218更新-V52.2", font=("Microsoft Yahei", 16, "bold"))
     title_label.pack(pady=10)
 
     # ==== 循环次数滑动条 ====

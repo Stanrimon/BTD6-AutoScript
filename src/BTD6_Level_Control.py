@@ -1,3 +1,4 @@
+import os
 from config import config, keybind_config
 import pyautogui
 import numpy as np
@@ -234,9 +235,14 @@ def wait_level(level: int):
                         change_game_speed(3)  # 三倍速进入重试这关
 
                     if config.LOG_FILE_GRANULARITY >= 1:
-                        write_game_log(f"第 {config.RETRY_TIMES} 次自动重试本关，全局失败次数{config.FAIL_COUNT}",
-                                       config.CUSTOM_SAVE_PATH
-                                       )
+                        current_filename = os.path.basename(config.SELECTED_FILE) if config.SELECTED_FILE else "未知文件"
+                        log_message = (
+                            f"第 {config.RETRY_TIMES} 次自动重试本关，"
+                            f"全局失败次数{config.FAIL_COUNT}"
+                            f"（{current_filename}，关卡{config.NOW_GAME_LEVEL}）"
+                        )
+
+                        write_game_log(log_message, config.CUSTOM_SAVE_PATH)
 
                     raise LevelRetryException(f"关卡 {config.NOW_GAME_LEVEL} 失败，准备重试")
 
@@ -407,7 +413,7 @@ def get_insta_map_name() -> str:
     :return: 地图名称的字符串，如果未找到匹配的地图则返回 "Unknown"
     """
 
-    debug_flag = 0
+    debug_flag = 1
 
     if debug_flag == 1:
         delay(5000)
@@ -428,8 +434,15 @@ def get_insta_map_name() -> str:
     # 初始化地图名称为 "Unknown"
     map_name = "Unknown"
 
+    '''
+    两种情况是不良点，找色无效。
+    一是x > 408，会被金气球、猴子战队等挡住
+    二是x < 280 且y < 444，会被保存图标挡住
+    取色时应注意范围。
+    '''
+
     # 检查 TrickyTracks
-    tricky_tracks_check_result = find_color_ex(267, 408, 272, 413, "FFFFF7", 0, 0.97)
+    tricky_tracks_check_result = find_color_ex(280, 400, 285, 405, "F7FBDE", 0, 0.97)
     if tricky_tracks_check_result:
         map_name = "棘手的轨道"
 
@@ -503,7 +516,7 @@ def get_insta_map_name() -> str:
             print(f"insta关卡识别结果: {map_name}")
 
     # 检查 Ouch
-    ouch_check_result = find_color_ex(270, 440, 275, 445, "756B6D", 0, 0.97)
+    ouch_check_result = find_color_ex(298, 497, 303, 502, "797071", 0, 0.97)
     if ouch_check_result:
         map_name = "#哎哟"
         print(f"insta关卡识别结果: {map_name}")
